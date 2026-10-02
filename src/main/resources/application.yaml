@@ -1,3 +1,31 @@
 spring:
   application:
     name: auth-service
+  profiles:
+    active: mock
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: UTC
+  liquibase:
+    enabled: false
+  kafka:
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        spring.json.add.type.headers: false
+
+auth:
+  mailing-topic: mailing-events
+  mailing-producer-mode: mock
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics

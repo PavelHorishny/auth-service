@@ -11,3 +11,5 @@ public record MailEventMessage(
         String locale,
         Map<String, Object> variables
 ) {}
+
+/*Żeby rekord pasował do takiego samego z serwisu mailingowego*/

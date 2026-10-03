@@ -42,3 +42,5 @@ public class PasswordResetToken {
     @Generated(event = EventType.INSERT)
     private Instant createdAt;
 }
+
+/*Klasa encji dla tabeli z tokenami*/

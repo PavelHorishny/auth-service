@@ -13,3 +13,6 @@ public class PasswordEncoderConfig {
         return new BCryptPasswordEncoder();
     }
 }
+
+/*
+Klasa hashingująca hasło użytkownika*/

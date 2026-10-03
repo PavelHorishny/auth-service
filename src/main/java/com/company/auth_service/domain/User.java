@@ -49,3 +49,5 @@ public class User {
         updatedAt = Instant.now();
     }
 }
+
+/*Klasa encji dla tabeli z userami*/

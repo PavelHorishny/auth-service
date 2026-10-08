@@ -1,4 +1,4 @@
-package com.company.auth_service.repository;
+package com.company.auth_service.infrastructure.repository;
 
 import com.company.auth_service.domain.User;
 import java.util.Optional;

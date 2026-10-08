@@ -1,4 +1,4 @@
 /**
  * REST controllers exposing the registration, login, and password-reset endpoints.
  */
-package com.company.auth_service.web;
+package com.company.auth_service.domain.web;

@@ -1,10 +1,11 @@
-package com.company.auth_service.service;
+package com.company.auth_service.infrastructure.service;
 
+import com.company.auth_service.domain.EmailAlreadyRegisteredException;
 import com.company.auth_service.domain.MailEventMessage;
 import com.company.auth_service.domain.MailEventPublisher;
 import com.company.auth_service.domain.User;
-import com.company.auth_service.repository.UserRepository;
-import com.company.auth_service.web.RegisterRequest;
+import com.company.auth_service.infrastructure.repository.UserRepository;
+import com.company.auth_service.domain.web.RegisterRequest;
 import java.util.Map;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;

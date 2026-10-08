@@ -1,11 +1,8 @@
-package com.company.auth_service.service;
+package com.company.auth_service.infrastructure.service;
 
-import com.company.auth_service.domain.MailEventMessage;
-import com.company.auth_service.domain.MailEventPublisher;
-import com.company.auth_service.domain.PasswordResetToken;
-import com.company.auth_service.domain.User;
-import com.company.auth_service.repository.PasswordResetTokenRepository;
-import com.company.auth_service.repository.UserRepository;
+import com.company.auth_service.domain.*;
+import com.company.auth_service.infrastructure.repository.PasswordResetTokenRepository;
+import com.company.auth_service.infrastructure.repository.UserRepository;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Map;

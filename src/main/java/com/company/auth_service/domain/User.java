@@ -31,7 +31,7 @@ public class User {
     private String passwordHash;
 
     @Column(nullable = false)
-    private String role;
+    private Roles role;
 
     @Column(nullable = false)
     private boolean enabled;

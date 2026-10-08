@@ -1,7 +1,7 @@
-package com.company.auth_service.web;
+package com.company.auth_service.app;
 
-import com.company.auth_service.service.EmailAlreadyRegisteredException;
-import com.company.auth_service.service.InvalidResetTokenException;
+import com.company.auth_service.domain.EmailAlreadyRegisteredException;
+import com.company.auth_service.domain.InvalidResetTokenException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;

@@ -1,4 +1,4 @@
-package com.company.auth_service.producer;
+package com.company.auth_service.infrastructure.producer;
 
 import com.company.auth_service.domain.MailEventMessage;
 import com.company.auth_service.domain.MailEventPublisher;

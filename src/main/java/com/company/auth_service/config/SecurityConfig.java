@@ -1,6 +1,6 @@
 package com.company.auth_service.config;
 
-import com.company.auth_service.security.JwtAuthenticationFilter;
+import com.company.auth_service.infrastructure.security.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -28,7 +28,7 @@ public class SecurityConfig {
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/register", "/login", "/reset-password", "/reset-password/confirm",
-                                "/swagger-ui/**", "/v3/api-docs/**", "/actuator/health").permitAll()
+                                "/swagger-ui/**", "/v3/api-docs/**", "/actuator/health").permitAll() //check allowance necessity
                         .anyRequest().authenticated())
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();

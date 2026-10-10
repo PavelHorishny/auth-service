@@ -1,9 +1,6 @@
 package com.company.auth_service.infrastructure.service;
 
-import com.company.auth_service.domain.EmailAlreadyRegisteredException;
-import com.company.auth_service.domain.MailEventMessage;
-import com.company.auth_service.domain.MailEventPublisher;
-import com.company.auth_service.domain.User;
+import com.company.auth_service.domain.*;
 import com.company.auth_service.infrastructure.repository.UserRepository;
 import com.company.auth_service.domain.web.RegisterRequest;
 import java.util.Map;
@@ -12,6 +9,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 @Service
 @RequiredArgsConstructor
@@ -30,17 +29,22 @@ public class AuthService {
         User user = new User();
         user.setEmail(request.email());
         user.setPasswordHash(passwordEncoder.encode(request.password()));
-        user.setRole("USER");
+        user.setRole(Roles.USER);
         user.setEnabled(true);
         userRepository.save(user);
 
-        mailEventPublisher.publish(MailEventMessage.builder()
-                .eventId(UUID.randomUUID().toString())
-                .recipient(user.getEmail())
-                .templateKey("new_user")
-                .locale("ru")
-                .variables(Map.of("email", user.getEmail()))
-                .build());
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+            @Override
+            public void afterCommit() {
+                mailEventPublisher.publish(MailEventMessage.builder()
+                        .eventId(UUID.randomUUID().toString())
+                        .recipient(user.getEmail())
+                        .templateKey(TemplateKeys.NEW_USER)
+                        .locale(Locales.EN)
+                        .variables(Map.of("email", user.getEmail()))
+                        .build());
+            }
+        });
 
         return user;
     }

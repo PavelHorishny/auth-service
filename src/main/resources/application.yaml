@@ -23,6 +23,8 @@ spring:
 auth:
   mailing-topic: mailing-events
   mailing-producer-mode: mock
+  password-reset:
+    token-ttl-minutes: 30
   jwt:
     secret: ${JWT_SECRET:dev-only-secret-change-me-32-bytes-min}
     expiration-minutes: 60

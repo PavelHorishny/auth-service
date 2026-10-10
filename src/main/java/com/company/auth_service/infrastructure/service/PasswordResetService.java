@@ -7,16 +7,21 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Map;
 import java.util.UUID;
+
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 @Service
 @RequiredArgsConstructor
 public class PasswordResetService {
 
-    private static final long TOKEN_TTL_MINUTES = 30;
+    @Value("${auth.password-reset.token-ttl-minutes}")
+    private long tokenTtlMinutes;
 
     private final UserRepository userRepository;
     private final PasswordResetTokenRepository tokenRepository;
@@ -33,25 +38,32 @@ public class PasswordResetService {
         PasswordResetToken resetToken = new PasswordResetToken();
         resetToken.setUser(user);
         resetToken.setToken(UUID.randomUUID().toString());
-        resetToken.setExpiresAt(Instant.now().plus(TOKEN_TTL_MINUTES, ChronoUnit.MINUTES));
+        resetToken.setExpiresAt(Instant.now().plus(tokenTtlMinutes, ChronoUnit.MINUTES));
         resetToken.setUsed(false);
         tokenRepository.save(resetToken);
 
-        mailEventPublisher.publish(MailEventMessage.builder()
-                .eventId(UUID.randomUUID().toString())
-                .recipient(user.getEmail())
-                .templateKey("password_reset")
-                .locale("ru")
-                .variables(Map.of("resetToken", resetToken.getToken()))
-                .build());
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+            @Override
+            public void afterCommit() {
+                mailEventPublisher.publish(MailEventMessage.builder()
+                        .eventId(UUID.randomUUID().toString())
+                        .recipient(user.getEmail())
+                        .templateKey(TemplateKeys.PASSWORD_RESET)
+                        .locale(Locales.EN)
+                        .variables(Map.of("resetToken", resetToken.getToken()))
+                        .build());
+            }
+        });
     }
 
     @Transactional
     public void confirmReset(String token, String newPassword) {
-        PasswordResetToken resetToken = tokenRepository.findByToken(token)
-                .filter(t -> !t.isUsed())
-                .filter(t -> t.getExpiresAt().isAfter(Instant.now()))
+        PasswordResetToken resetToken = tokenRepository
+                .findByTokenAndUsedFalseAndExpiresAtAfter(token, Instant.now())
                 .orElseThrow(InvalidResetTokenException::new);
+        /*PasswordResetToken resetToken = tokenRepository.findValidToken(token, Instant.now())
+                .orElseThrow(InvalidResetTokenException::new);*/
+
 
         User user = resetToken.getUser();
         user.setPasswordHash(passwordEncoder.encode(newPassword));

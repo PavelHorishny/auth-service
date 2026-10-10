@@ -7,8 +7,8 @@ import lombok.Builder;
 public record MailEventMessage(
         String eventId,
         String recipient,
-        String templateKey,
-        String locale,
+        TemplateKeys templateKey,
+        Locales locale,
         Map<String, Object> variables
 ) {}
 

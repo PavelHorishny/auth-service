@@ -2,7 +2,7 @@ package com.company.auth_service.infrastructure.service;
 
 import com.company.auth_service.domain.*;
 import com.company.auth_service.infrastructure.repository.UserRepository;
-import com.company.auth_service.domain.web.RegisterRequest;
+import com.company.auth_service.infrastructure.web.RegisterRequest;
 import java.util.Map;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;

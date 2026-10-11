@@ -1,9 +1,9 @@
 package com.company.auth_service.app;
 
-import com.company.auth_service.domain.web.*;
 import com.company.auth_service.infrastructure.security.JwtTokenProvider;
 import com.company.auth_service.infrastructure.service.AuthService;
 import com.company.auth_service.infrastructure.service.PasswordResetService;
+import com.company.auth_service.infrastructure.web.*;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

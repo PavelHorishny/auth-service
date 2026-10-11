@@ -7,7 +7,7 @@ import com.company.auth_service.domain.MailEventPublisher;
 import com.company.auth_service.domain.Roles;
 import com.company.auth_service.domain.TemplateKeys;
 import com.company.auth_service.domain.User;
-import com.company.auth_service.domain.web.RegisterRequest;
+import com.company.auth_service.infrastructure.web.RegisterRequest;
 import com.company.auth_service.infrastructure.repository.UserRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;

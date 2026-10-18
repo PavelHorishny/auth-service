@@ -5,4 +5,3 @@ public class EmailAlreadyRegisteredException extends RuntimeException {
         super("Email already registered: " + email);
     }
 }
-//Separate folder for exceptions classes?? or to domain folder as it doesn't depend on any other class?

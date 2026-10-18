@@ -17,7 +17,4 @@ public class LoggingMailEventPublisher implements MailEventPublisher {
                 event.eventId(), event.templateKey(), event.recipient());
     }
 
-/*
-    Implementacja publishera do celów testowych, która nie wysyła wiadomości przez Kafkę, lecz loguje, jaka wiadomość miała zostać wysłana.
-*/
 }

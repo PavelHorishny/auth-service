@@ -7,5 +7,7 @@
 
     <include file="db/changelog/changes/001-create-users.xml" relativeToChangelogFile="false"/>
     <include file="db/changelog/changes/002-create-password-reset-tokens.xml" relativeToChangelogFile="false"/>
+    <include file="db/changelog/changes/003-add-password-reset-token-notification-fields.xml" relativeToChangelogFile="false"/>
+    <include file="db/changelog/changes/004-add-user-notification-fields.xml" relativeToChangelogFile="false"/>
 
 </databaseChangeLog>

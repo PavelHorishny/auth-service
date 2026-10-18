@@ -6,22 +6,17 @@ import com.company.auth_service.domain.MailEventPublisher;
 import com.company.auth_service.domain.PasswordResetToken;
 import com.company.auth_service.domain.TemplateKeys;
 import com.company.auth_service.domain.User;
-import com.company.auth_service.infrastructure.repository.PasswordResetTokenRepository;
-import com.company.auth_service.infrastructure.repository.UserRepository;
+import com.company.auth_service.domain.PasswordResetTokenRepository;
+import com.company.auth_service.domain.UserRepository;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Optional;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.test.util.ReflectionTestUtils;
-import org.springframework.transaction.support.TransactionSynchronizationManager;
-import org.springframework.transaction.support.TransactionSynchronizationUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -35,8 +30,6 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class PasswordResetServiceTest {
 
-    private static final long TOKEN_TTL_MINUTES = 30;
-
     @Mock
     private UserRepository userRepository;
     @Mock
@@ -45,22 +38,15 @@ class PasswordResetServiceTest {
     private MailEventPublisher mailEventPublisher;
     @Mock
     private PasswordEncoder passwordEncoder;
+    @Mock
+    private PasswordResetTokenIssuer tokenIssuer;
 
     private PasswordResetService passwordResetService;
 
-    @BeforeEach
+    @org.junit.jupiter.api.BeforeEach
     void setUp() {
-        passwordResetService =
-                new PasswordResetService(userRepository, tokenRepository, mailEventPublisher, passwordEncoder);
-        ReflectionTestUtils.setField(passwordResetService, "tokenTtlMinutes", TOKEN_TTL_MINUTES);
-        TransactionSynchronizationManager.initSynchronization();
-    }
-
-    @AfterEach
-    void tearDown() {
-        if (TransactionSynchronizationManager.isSynchronizationActive()) {
-            TransactionSynchronizationManager.clearSynchronization();
-        }
+        passwordResetService = new PasswordResetService(
+                userRepository, tokenRepository, mailEventPublisher, passwordEncoder, tokenIssuer);
     }
 
     @Test
@@ -69,36 +55,45 @@ class PasswordResetServiceTest {
 
         passwordResetService.requestReset("missing@example.com");
 
-        verify(tokenRepository, never()).save(any());
-        verifyNoInteractions(mailEventPublisher);
+        verifyNoInteractions(tokenIssuer, mailEventPublisher);
     }
 
     @Test
-    void requestReset_savesTokenWithConfiguredTtlAndPublishesOnlyAfterCommit() {
+    void requestReset_issuesTokenPublishesEventAndMarksNotified() {
         User user = new User();
         user.setEmail("user@example.com");
         when(userRepository.findByEmail("user@example.com")).thenReturn(Optional.of(user));
 
-        Instant before = Instant.now();
+        PasswordResetToken issuedToken = PasswordResetToken.issue(
+                user, "token-value", Instant.now().plus(30, ChronoUnit.MINUTES), "event-123");
+        when(tokenIssuer.issue(user)).thenReturn(issuedToken);
+
         passwordResetService.requestReset("user@example.com");
-        Instant after = Instant.now();
-
-        ArgumentCaptor<PasswordResetToken> tokenCaptor = ArgumentCaptor.forClass(PasswordResetToken.class);
-        verify(tokenRepository).save(tokenCaptor.capture());
-        PasswordResetToken savedToken = tokenCaptor.getValue();
-        assertThat(savedToken.isUsed()).isFalse();
-        assertThat(savedToken.getExpiresAt())
-                .isAfterOrEqualTo(before.plus(TOKEN_TTL_MINUTES, ChronoUnit.MINUTES))
-                .isBeforeOrEqualTo(after.plus(TOKEN_TTL_MINUTES, ChronoUnit.MINUTES));
-
-        verifyNoInteractions(mailEventPublisher);
-
-        TransactionSynchronizationUtils.triggerAfterCommit();
 
         ArgumentCaptor<MailEventMessage> eventCaptor = ArgumentCaptor.forClass(MailEventMessage.class);
         verify(mailEventPublisher).publish(eventCaptor.capture());
+        assertThat(eventCaptor.getValue().eventId()).isEqualTo("event-123");
         assertThat(eventCaptor.getValue().templateKey()).isEqualTo(TemplateKeys.PASSWORD_RESET);
         assertThat(eventCaptor.getValue().recipient()).isEqualTo("user@example.com");
+
+        verify(tokenIssuer).markNotified(issuedToken);
+    }
+
+    @Test
+    void requestReset_leavesTokenUnnotifiedWhenPublishFails() {
+        User user = new User();
+        user.setEmail("user@example.com");
+        when(userRepository.findByEmail("user@example.com")).thenReturn(Optional.of(user));
+
+        PasswordResetToken issuedToken = PasswordResetToken.issue(
+                user, "token-value", Instant.now().plus(30, ChronoUnit.MINUTES), "event-123");
+        when(tokenIssuer.issue(user)).thenReturn(issuedToken);
+        org.mockito.Mockito.doThrow(new RuntimeException("kafka down"))
+                .when(mailEventPublisher).publish(any());
+
+        passwordResetService.requestReset("user@example.com");
+
+        verify(tokenIssuer, never()).markNotified(any());
     }
 
     @Test

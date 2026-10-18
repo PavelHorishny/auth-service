@@ -1,6 +1,8 @@
 auth:
   mailing-producer-mode: mock
 
+auth.repository-mode: mock
+
 spring:
   autoconfigure:
     exclude:

@@ -1,6 +1,8 @@
 auth:
   mailing-producer-mode: kafka
 
+auth.repository-mode : jpa
+
 spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/auth

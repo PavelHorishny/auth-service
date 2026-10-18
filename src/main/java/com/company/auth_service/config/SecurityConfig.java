@@ -47,7 +47,4 @@ public class SecurityConfig {
         return provider;
     }
 
-/*
-    Klasa konfiguracyjna bezpieczeństwa. Reguluje zachowanie aplikacji podczas odpytywania kontrolera
-*/
 }

@@ -12,4 +12,4 @@ public record MailEventMessage(
         Map<String, Object> variables
 ) {}
 
-/*Żeby rekord pasował do takiego samego z serwisu mailingowego*/
+

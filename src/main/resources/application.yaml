@@ -25,6 +25,9 @@ auth:
   mailing-producer-mode: mock
   password-reset:
     token-ttl-minutes: 30
+    retry-interval-ms: 60000
+  registration:
+    retry-interval-ms: 60000
   jwt:
     secret: ${JWT_SECRET:dev-only-secret-change-me-32-bytes-min}
     expiration-minutes: 60

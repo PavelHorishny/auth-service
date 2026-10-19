@@ -23,11 +23,11 @@ public class AuthService {
     public User register(RegisterRequest request) {
         if (userRepository.existsByEmail(request.email())) {
             throw new EmailAlreadyRegisteredException(request.email());
-        }
+        } //remove
 
         User mapped = userMapper.toUser(request);
         User user = userRegistrationIssuer.register(mapped, passwordEncoder.encode(request.password()));
-
+        /* try catch integration via=olation*/
         try {
             mailEventPublisher.publish(UserRegistrationMailEventFactory.from(user));
             userRegistrationIssuer.markNotified(user);
@@ -37,4 +37,5 @@ public class AuthService {
 
         return user;
     }
+    //TODO rework method to claim user not request and move to domain
 }

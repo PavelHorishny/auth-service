@@ -25,4 +25,5 @@ public class UserRegistrationIssuer {
         user.markNotified();
         userRepository.save(user);
     }
+    //TODO
 }

@@ -7,3 +7,4 @@ public record ConfirmResetPasswordRequest(
         @NotBlank String token,
         @NotBlank @Size(min = 8) String newPassword
 ) {}
+//TODO add new password validation rules

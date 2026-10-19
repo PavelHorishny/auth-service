@@ -20,4 +20,5 @@ public final class PasswordResetMailEventFactory {
                 .variables(Map.of("resetToken", resetToken.getToken()))
                 .build();
     }
+    //move to domain?
 }

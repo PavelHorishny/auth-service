@@ -50,5 +50,5 @@ public class PasswordResetService {
         resetToken.markUsed();
         tokenRepository.save(resetToken);
     }
-
+//TODO move to domain
 }

@@ -5,7 +5,7 @@ import com.company.auth_service.domain.MailEventPublisher;
 import com.company.auth_service.domain.PasswordResetToken;
 import com.company.auth_service.domain.PasswordResetTokenRepository;
 import com.company.auth_service.domain.User;
-import com.company.auth_service.infrastructure.service.PasswordResetTokenIssuer;
+import com.company.auth_service.domain.PasswordResetTokenIssuer;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;

@@ -2,8 +2,9 @@ package com.company.auth_service.app;
 
 import com.company.auth_service.infrastructure.security.JwtTokenProvider;
 import com.company.auth_service.infrastructure.service.AuthService;
-import com.company.auth_service.infrastructure.service.PasswordResetService;
+import com.company.auth_service.domain.PasswordResetService;
 import com.company.auth_service.infrastructure.web.*;
+import com.company.auth_service.infrastructure.web.mapper.UserWebMapper;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -17,13 +18,15 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
 
     private final AuthService authService;
+    private final UserWebMapper userMapper;
     private final PasswordResetService passwordResetService;
     private final AuthenticationManager authenticationManager;
     private final JwtTokenProvider jwtTokenProvider;
 
     @PostMapping("/register")
     public ResponseEntity<Void> register(@Valid @RequestBody RegisterRequest request) {
-        authService.register(request);
+
+        authService.register(userMapper.toUser(request), request.password());
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 

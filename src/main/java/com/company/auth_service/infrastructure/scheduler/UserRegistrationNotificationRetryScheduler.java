@@ -4,7 +4,7 @@ import com.company.auth_service.domain.MailEventPublisher;
 import com.company.auth_service.domain.User;
 import com.company.auth_service.domain.UserRepository;
 import com.company.auth_service.infrastructure.service.UserRegistrationIssuer;
-import com.company.auth_service.infrastructure.service.UserRegistrationMailEventFactory;
+import com.company.auth_service.domain.UserRegistrationMailEventFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;

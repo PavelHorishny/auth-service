@@ -37,6 +37,13 @@ public class PasswordResetToken {
         this.used = true;
     }
 
+    public void redeem(String newPasswordHash) {
+        user.changePassword(newPasswordHash);
+        //this.used = true;
+        // Mark the token as used after redeeming V1
+        markUsed(); // Mark the token as used after redeeming V2
+    }
+
     public void markNotified() {
         this.notified = true;
     }

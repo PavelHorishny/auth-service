@@ -1,8 +1,5 @@
-package com.company.auth_service.infrastructure.service;
+package com.company.auth_service.domain;
 
-import com.company.auth_service.domain.PasswordResetToken;
-import com.company.auth_service.domain.PasswordResetTokenRepository;
-import com.company.auth_service.domain.User;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.UUID;

@@ -1,6 +1,5 @@
-package com.company.auth_service.infrastructure.service;
+package com.company.auth_service.domain;
 
-import com.company.auth_service.domain.*;
 import java.time.Instant;
 
 import lombok.RequiredArgsConstructor;
@@ -30,10 +29,17 @@ public class PasswordResetService {
 
         try {
             mailEventPublisher.publish(PasswordResetMailEventFactory.from(resetToken));
-            tokenIssuer.markNotified(resetToken);
         } catch (Exception e) {
             log.warn("Failed to publish password reset event for token {}, will retry via scheduler",
                     resetToken.getId(), e);
+            return;
+        }
+
+        try {
+            tokenIssuer.markNotified(resetToken);
+        } catch (Exception e) {
+            log.warn("Published password reset event for token {} but failed to mark it notified; " +
+                    "scheduler will resend (harmless - consumer dedupes by eventId)", resetToken.getId(), e);
         }
     }
 
@@ -44,11 +50,11 @@ public class PasswordResetService {
                 .orElseThrow(InvalidResetTokenException::new);
 
         User user = resetToken.getUser();
-        user.changePassword(passwordEncoder.encode(newPassword));
+        //user.changePassword(passwordEncoder.encode(newPassword));
+        resetToken.redeem(passwordEncoder.encode(newPassword));
         userRepository.save(user);
 
-        resetToken.markUsed();
+        //resetToken.markUsed();
         tokenRepository.save(resetToken);
     }
-//TODO move to domain
 }

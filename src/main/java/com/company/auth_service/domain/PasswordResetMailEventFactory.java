@@ -1,9 +1,5 @@
-package com.company.auth_service.infrastructure.service;
+package com.company.auth_service.domain;
 
-import com.company.auth_service.domain.Locales;
-import com.company.auth_service.domain.MailEventMessage;
-import com.company.auth_service.domain.PasswordResetToken;
-import com.company.auth_service.domain.TemplateKeys;
 import java.util.Map;
 
 public final class PasswordResetMailEventFactory {

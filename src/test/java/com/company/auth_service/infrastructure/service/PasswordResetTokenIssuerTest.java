@@ -1,6 +1,7 @@
 package com.company.auth_service.infrastructure.service;
 
 import com.company.auth_service.domain.PasswordResetToken;
+import com.company.auth_service.domain.PasswordResetTokenIssuer;
 import com.company.auth_service.domain.PasswordResetTokenRepository;
 import com.company.auth_service.domain.User;
 import java.time.Instant;

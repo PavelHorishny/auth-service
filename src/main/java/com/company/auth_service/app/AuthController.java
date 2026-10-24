@@ -1,7 +1,7 @@
 package com.company.auth_service.app;
 
 import com.company.auth_service.infrastructure.security.JwtTokenProvider;
-import com.company.auth_service.infrastructure.service.AuthService;
+import com.company.auth_service.domain.AuthService;
 import com.company.auth_service.domain.PasswordResetService;
 import com.company.auth_service.infrastructure.web.*;
 import com.company.auth_service.infrastructure.web.mapper.UserWebMapper;

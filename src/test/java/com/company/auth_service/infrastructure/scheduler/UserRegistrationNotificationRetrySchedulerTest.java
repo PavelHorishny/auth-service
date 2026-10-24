@@ -4,7 +4,7 @@ import com.company.auth_service.domain.MailEventMessage;
 import com.company.auth_service.domain.MailEventPublisher;
 import com.company.auth_service.domain.User;
 import com.company.auth_service.domain.UserRepository;
-import com.company.auth_service.infrastructure.service.UserRegistrationIssuer;
+import com.company.auth_service.domain.UserRegistrationIssuer;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

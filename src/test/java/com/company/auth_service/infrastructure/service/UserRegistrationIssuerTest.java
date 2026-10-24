@@ -2,6 +2,7 @@ package com.company.auth_service.infrastructure.service;
 
 import com.company.auth_service.domain.Roles;
 import com.company.auth_service.domain.User;
+import com.company.auth_service.domain.UserRegistrationIssuer;
 import com.company.auth_service.domain.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

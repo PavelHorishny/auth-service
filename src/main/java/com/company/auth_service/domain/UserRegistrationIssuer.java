@@ -1,7 +1,5 @@
-package com.company.auth_service.infrastructure.service;
+package com.company.auth_service.domain;
 
-import com.company.auth_service.domain.User;
-import com.company.auth_service.domain.UserRepository;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

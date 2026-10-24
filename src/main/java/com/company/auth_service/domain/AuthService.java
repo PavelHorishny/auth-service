@@ -1,7 +1,6 @@
-package com.company.auth_service.infrastructure.service;
+package com.company.auth_service.domain;
 
 
-import com.company.auth_service.domain.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -12,7 +11,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class AuthService {
 
-    private final UserRepository userRepository; //to work with DB
+    //private final UserRepository userRepository; //to work with DB
     private final PasswordEncoder passwordEncoder; //to encode passwords
     private final MailEventPublisher mailEventPublisher; //to send events by Kafka
     private final UserRegistrationIssuer userRegistrationIssuer;

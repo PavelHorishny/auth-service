@@ -26,6 +26,7 @@ public class UserRegistrationNotificationRetryScheduler {
             try {
                 mailEventPublisher.publish(UserRegistrationMailEventFactory.from(user));
                 userRegistrationIssuer.markNotified(user);
+                //TODO Czy warto rozdzielic logike tak jak w auth-service?
             } catch (Exception e) {
                 log.warn("Retry publish failed for new-user event (userId={}), will retry again later",
                         user.getId(), e);

@@ -19,10 +19,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-/**
- * findByTokenAndUsedFalseAndExpiresAtAfter (derived) and findValidToken (@Query) express the
- * same WHERE clause two different ways - this asserts they actually agree on every row shape.
- */
+
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @ActiveProfiles("local")

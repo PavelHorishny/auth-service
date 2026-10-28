@@ -25,6 +25,7 @@ public class KafkaMailEventPublisher implements MailEventPublisher {
     @Override
     public void publish(MailEventMessage event) {
         kafkaTemplate.send(topic, event.eventId(), mailEventKafkaMapper.toKafkaMessage(event));
+        //TODO add get
         log.info("Published mail event {} (template={}) to topic {}", event.eventId(), event.templateKey(), topic);
     }
 }

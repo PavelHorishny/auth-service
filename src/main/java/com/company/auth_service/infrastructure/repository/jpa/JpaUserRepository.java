@@ -42,7 +42,7 @@ public class JpaUserRepository implements UserRepository{
     @Transactional(propagation = Propagation.MANDATORY)
     public List<PendingUserNotification> lockPendingNotifications(int limit) {
         return dao.lockPendingNotifications(limit).stream()
-                .map(r -> new PendingUserNotification(r.getId(), r.getEventId(), r.getToken()/*,r.getUserId()*/))
+                .map(r -> new PendingUserNotification(r.getId(), r.getEventId(), r.getEmail()))
                 .toList();
     }
 

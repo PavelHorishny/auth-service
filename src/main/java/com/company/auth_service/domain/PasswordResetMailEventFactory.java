@@ -12,7 +12,7 @@ public final class PasswordResetMailEventFactory {
     public static MailEventMessage from(PendingPasswordResetNotification pending, String recipientEmail) {
         return of(pending.eventId(), recipientEmail, pending.token());
     }
-    public static MailEventMessage of(String eventId, String recipientEmail, String resetToken) {
+    private static MailEventMessage of(String eventId, String recipientEmail, String resetToken) {
         return MailEventMessage.builder()
                 .eventId(eventId)
                 .recipient(recipientEmail)

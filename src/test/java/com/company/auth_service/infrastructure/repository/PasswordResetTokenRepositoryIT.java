@@ -7,6 +7,7 @@ import com.company.auth_service.infrastructure.repository.jpa.entity.UserEntity;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -62,18 +63,62 @@ class PasswordResetTokenRepositoryIT {
     }
 
     @Test
-    void findAllByNotifiedFalse_returnsOnlyUnnotifiedTokens() {
+    void lockPendingNotifications_returnsOnlyUnnotifiedTokensAsProjection() {
         UserEntity pendingUser = persistUser("pending@example.com");
-        PasswordResetTokenEntity pending = persistToken(pendingUser, "pending-token", false, Instant.now().plus(10, ChronoUnit.MINUTES));
+        PasswordResetTokenEntity pending = persistToken(pendingUser, "pending-token", false,
+                Instant.now().plus(10, ChronoUnit.MINUTES));
 
-        UserEntity notifiedUser = persistUser("done@example.com");
-        PasswordResetTokenEntity notified = persistToken(notifiedUser, "done-token", false, Instant.now().plus(10, ChronoUnit.MINUTES));
-        notified.setNotified(true);
-        tokenRepository.save(notified);
+        UserEntity doneUser = persistUser("done@example.com");
+        PasswordResetTokenEntity done = persistToken(doneUser, "done-token", false,
+                Instant.now().plus(10, ChronoUnit.MINUTES));
+        done.setNotified(true);
+        tokenRepository.saveAndFlush(done);
 
-      /*  assertThat(tokenRepository.findAllByNotifiedFalse())
-                .extracting(PasswordResetTokenEntity::getId)
-                .containsExactly(pending.getId());*/
+        List<TokenJpaDao.PendingNotificationRow> rows = tokenRepository.lockPendingNotifications(10);
+
+        assertThat(rows).hasSize(1);
+        assertThat(rows.get(0).getId()).isEqualTo(pending.getId());
+        assertThat(rows.get(0).getToken()).isEqualTo("pending-token");
+        assertThat(rows.get(0).getUserId()).isEqualTo(pendingUser.getId());
+    }
+
+    @Test
+    void lockPendingNotifications_respectsTheLimit() {
+        for (int i = 0; i < 3; i++) {
+            persistToken(persistUser("limit" + i + "@example.com"), "limit-token-" + i, false,
+                    Instant.now().plus(10, ChronoUnit.MINUTES));
+        }
+        tokenRepository.flush();
+
+        assertThat(tokenRepository.lockPendingNotifications(2)).hasSize(2);
+    }
+
+    @Test
+    void markNotified_flipsOnlyTheGivenTokens() {
+        PasswordResetTokenEntity first = persistToken(persistUser("first@example.com"), "first", false,
+                Instant.now().plus(10, ChronoUnit.MINUTES));
+        PasswordResetTokenEntity second = persistToken(persistUser("second@example.com"), "second", false,
+                Instant.now().plus(10, ChronoUnit.MINUTES));
+
+        int updated = tokenRepository.markNotified(List.of(first.getId()));
+
+        assertThat(updated).isEqualTo(1);
+        assertThat(tokenRepository.findById(first.getId()).orElseThrow().isNotified()).isTrue();
+        assertThat(tokenRepository.findById(second.getId()).orElseThrow().isNotified()).isFalse();
+    }
+
+    @Test
+    void markExpiredNotified_closesOnlyExpiredPendingTokens() {
+        PasswordResetTokenEntity expired = persistToken(persistUser("exp@example.com"), "exp", false,
+                Instant.now().minus(1, ChronoUnit.MINUTES));
+        PasswordResetTokenEntity valid = persistToken(persistUser("ok@example.com"), "ok", false,
+                Instant.now().plus(10, ChronoUnit.MINUTES));
+
+        int closed = tokenRepository.markExpiredNotified(Instant.now());
+
+        assertThat(closed).isEqualTo(1);
+        assertThat(tokenRepository.findById(expired.getId()).orElseThrow().isNotified()).isTrue();
+        assertThat(tokenRepository.findById(valid.getId()).orElseThrow().isNotified()).isFalse();
     }
 
     private void assertBothMethodsReturn(String token, UUID expectedTokenId) {

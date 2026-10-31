@@ -6,17 +6,18 @@ import com.company.auth_service.domain.PasswordResetTokenRepository;
 import com.company.auth_service.domain.User;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
+import java.util.UUID;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class PasswordResetTokenIssuerTest {
@@ -58,15 +59,14 @@ class PasswordResetTokenIssuerTest {
     }
 
     @Test
-    void markNotified_flipsFlagAndPersists() {
-        User user = new User();
-        PasswordResetToken token = PasswordResetToken.issue(user, "tok", Instant.now(), "event-1");
+    void markNotified_flipsFlagWithSingleUpdateInsteadOfRewritingTheRow() {
+        PasswordResetToken token = PasswordResetToken.issue(new User(), "tok", Instant.now(), "event-1");
+        token.setId(UUID.randomUUID());
 
         tokenIssuer.markNotified(token);
 
         assertThat(token.isNotified()).isTrue();
-        ArgumentCaptor<PasswordResetToken> captor = ArgumentCaptor.forClass(PasswordResetToken.class);
-        verify(tokenRepository).save(captor.capture());
-        assertThat(captor.getValue()).isSameAs(token);
+        verify(tokenRepository).markNotified(List.of(token.getId()));
+        verify(tokenRepository, never()).save(any());
     }
 }

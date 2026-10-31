@@ -8,14 +8,14 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class AuthServiceTest {
@@ -26,12 +26,40 @@ class AuthServiceTest {
     private MailEventPublisher mailEventPublisher;
     @Mock
     private UserRegistrationIssuer userRegistrationIssuer;
+    @Mock
+    private UserRepository userRepository;
 
     private AuthService authService;
 
     @BeforeEach
     void setUp() {
-        authService = new AuthService(passwordEncoder, mailEventPublisher, userRegistrationIssuer);
+        authService = new AuthService(userRepository, passwordEncoder, mailEventPublisher, userRegistrationIssuer);
+    }
+
+    @Test
+    void register_throwsWhenEmailAlreadyRegistered() {
+        User user = new User();
+        user.setEmail("dup@example.com");
+        org.mockito.Mockito.when(userRepository.existsByEmail("dup@example.com")).thenReturn(true);
+
+        assertThatThrownBy(() -> authService.register(user, "pwd"))
+                .isInstanceOf(EmailAlreadyRegisteredException.class);
+
+        verifyNoInteractions(userRegistrationIssuer, mailEventPublisher);
+    }
+
+    @Test
+    void register_mapsUniqueIndexViolationToEmailAlreadyRegistered() {
+        User user = new User();
+        user.setEmail("race@example.com");
+        org.mockito.Mockito.when(passwordEncoder.encode("pwd")).thenReturn("hash");
+        org.mockito.Mockito.when(userRegistrationIssuer.register(user, "hash"))
+                .thenThrow(new DataIntegrityViolationException("uk_users_email"));
+
+        assertThatThrownBy(() -> authService.register(user, "pwd"))
+                .isInstanceOf(EmailAlreadyRegisteredException.class);
+
+        verifyNoInteractions(mailEventPublisher);
     }
 
     @Test

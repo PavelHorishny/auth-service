@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="005-notification-retry-backfill" author="auth-service">
+        <comment>
+            Строки, созданные до changeset'ов 003/004, получили notified=false и не имеют event_id.
+            Без этого шедулер подхватил бы их и отправил в Kafka с null eventId.
+        </comment>
+        <sql>UPDATE users SET notified = TRUE WHERE event_id IS NULL</sql>
+        <sql>UPDATE password_reset_tokens SET notified = TRUE WHERE event_id IS NULL</sql>
+    </changeSet>
+
+    <changeSet id="005-notification-retry-partial-indexes" author="auth-service" dbms="postgresql">
+        <comment>
+            Частичные индексы содержат только ожидающие строки и обслуживают запрос шедулера:
+            WHERE notified = false ORDER BY created_at LIMIT n FOR UPDATE SKIP LOCKED.
+        </comment>
+        <sql>CREATE INDEX idx_users_pending_notification ON users (created_at) WHERE notified = FALSE</sql>
+        <sql>CREATE INDEX idx_password_reset_tokens_pending_notification
+            ON password_reset_tokens (created_at) WHERE notified = FALSE</sql>
+        <rollback>
+            <sql>DROP INDEX idx_users_pending_notification</sql>
+            <sql>DROP INDEX idx_password_reset_tokens_pending_notification</sql>
+        </rollback>
+    </changeSet>
+</databaseChangeLog>

@@ -5,6 +5,7 @@ import com.company.auth_service.domain.User;
 
 import java.time.Instant;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import com.company.auth_service.domain.UserRepository;
 import com.company.auth_service.infrastructure.repository.UserJpaDao;
@@ -36,7 +37,9 @@ public class JpaUserRepository implements UserRepository{
 
     @Override
     public Map<UUID, String> findEmailsByIds(Collection<UUID> ids) {
-        return Map.of();
+        if (ids.isEmpty()) return Map.of();
+        return dao.findEmailsByIds(ids).stream()
+                .collect(Collectors.toMap(UserJpaDao.EmailRow::getId,UserJpaDao.EmailRow::getEmail));
     }
 
     @Override

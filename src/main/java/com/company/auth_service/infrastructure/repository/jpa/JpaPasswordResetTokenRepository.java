@@ -49,14 +49,11 @@ public class JpaPasswordResetTokenRepository implements PasswordResetTokenReposi
     }
 
     @Override
+    @Transactional
     public int markExpiredNotified(Instant now) {
-        return 0;
+        return dao.markExpiredNotified(now);
     }
 
-//    @Override
-//    public List<PasswordResetToken> findAllByNotifiedFalse() {
-//        return dao.findAllByNotifiedFalse().stream().map(mapper::toDomain).toList();
-//    }
 
     @Override
     public PasswordResetToken save(PasswordResetToken passwordResetToken) {

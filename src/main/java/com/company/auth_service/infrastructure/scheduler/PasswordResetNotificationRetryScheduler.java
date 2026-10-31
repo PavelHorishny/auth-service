@@ -19,10 +19,6 @@ public class PasswordResetNotificationRetryScheduler {
     @Value("${auth.password-reset.retry-batch-size:100}")
     private int batchSize;
 
-    private final PasswordResetTokenRepository tokenRepository;
-    private final MailEventPublisher mailEventPublisher;
-    private final PasswordResetTokenIssuer tokenIssuer;
-
     @Scheduled(fixedDelayString = "${auth.password-reset.retry-interval-ms:60000}")
     public void retryUnnotified() {
         retryService.giveUpOnExpired();

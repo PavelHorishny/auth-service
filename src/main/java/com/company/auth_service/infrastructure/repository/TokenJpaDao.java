@@ -13,12 +13,8 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface TokenJpaDao extends JpaRepository<PasswordResetTokenEntity, UUID> {
-    interface PendingNotificationRow {
-        UUID getId();
-        String getEventId();
-        String getToken();
-        UUID getUserId();
-    }
+    interface PendingNotificationRow { UUID getId(); String getEventId(); String getToken(); UUID getUserId(); }
+
     Optional<PasswordResetTokenEntity> findByTokenAndUsedFalseAndExpiresAtAfter(String token, Instant now);
     @Query("SELECT t FROM PasswordResetTokenEntity t WHERE t.token = :token AND t.used = false AND t.expiresAt > :now")
     Optional<PasswordResetTokenEntity> findValidToken(@Param("token") String token, @Param("now") Instant now);

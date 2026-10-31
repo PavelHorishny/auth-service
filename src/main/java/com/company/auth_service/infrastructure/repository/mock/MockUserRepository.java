@@ -1,13 +1,12 @@
 package com.company.auth_service.infrastructure.repository.mock;
 
+import com.company.auth_service.domain.PendingUserNotification;
 import com.company.auth_service.domain.User;
 import com.company.auth_service.domain.UserRepository;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 
@@ -29,11 +28,26 @@ public class MockUserRepository implements UserRepository {
     }
 
     @Override
-    public List<User> findAllByNotifiedFalse() {
-        return byId.values().stream()
-                .filter(u -> !u.isNotified())
-                .toList();
+    public Map<UUID, String> findEmailsByIds(Collection<UUID> ids) {
+        return Map.of();
     }
+
+    @Override
+    public List<PendingUserNotification> lockPendingNotifications(int limit) {
+        return List.of();
+    }
+
+    @Override
+    public int markNotified(Collection<UUID> ids) {
+        return 0;
+    }
+
+//    @Override
+//    public List<User> findAllByNotifiedFalse() {
+//        return byId.values().stream()
+//                .filter(u -> !u.isNotified())
+//                .toList();
+//    }
 
     @Override
     public User save(User user) {

@@ -12,15 +12,8 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface UserJpaDao extends JpaRepository<UserEntity, UUID> {
-    interface PendingNotificationRow {
-        UUID getId();
-        String getEventId();
-        String getToken();
-        UUID getUserId();
-    }
-    interface EmailRow {
-        UUID getId(); String getEmail();
-    }
+    interface PendingNotificationRow { UUID getId(); String getEventId(); String getEmail(); }
+    interface EmailRow { UUID getId(); String getEmail(); }
     Optional<UserEntity> findByEmail(String email);
     boolean existsByEmail(String email);
     //List<UserEntity> findAllByNotifiedFalse();

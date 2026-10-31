@@ -1,6 +1,5 @@
 package com.company.auth_service.infrastructure.repository.jpa;
 
-import com.company.auth_service.domain.PendingPasswordResetNotification;
 import com.company.auth_service.domain.PendingUserNotification;
 import com.company.auth_service.domain.User;
 
@@ -43,7 +42,7 @@ public class JpaUserRepository implements UserRepository{
     @Transactional(propagation = Propagation.MANDATORY)
     public List<PendingUserNotification> lockPendingNotifications(int limit) {
         return dao.lockPendingNotifications(limit).stream()
-                .map(r -> new PendingPasswordResetNotification(r.getId(), r.getEventId(), r.getToken(), r.getUserId()))
+                .map(r -> new PendingUserNotification(r.getId(), r.getEventId(), r.getToken()/*,r.getUserId()*/))
                 .toList();
     }
 
@@ -53,10 +52,6 @@ public class JpaUserRepository implements UserRepository{
         return dao.markNotified(ids);
     }
 
-//    @Override
-//    public List<User> findAllByNotifiedFalse() {
-//        return dao.findAllByNotifiedFalse().stream().map(mapper::toDomain).toList();
-//    }
 
     @Override
     public User save(User user) {

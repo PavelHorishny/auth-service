@@ -2,6 +2,7 @@ package com.company.auth_service.domain;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -30,6 +31,6 @@ public class PasswordResetTokenIssuer {
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void markNotified(PasswordResetToken resetToken) {
         resetToken.markNotified();
-        tokenRepository.save(resetToken);
+        tokenRepository.markNotified(List.of(resetToken.getId()));
     }
 }

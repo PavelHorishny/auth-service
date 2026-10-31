@@ -1,5 +1,6 @@
 package com.company.auth_service.domain;
 
+import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -19,9 +20,8 @@ public class UserRegistrationIssuer {
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void markNotified(User user) {
+    public void markNotified(User user) {//is it suitable for issue of using only one field or must i made to get certain field as an argument
         user.markNotified();
-        userRepository.save(user);
+        userRepository.markNotified(List.of(user.getId()));
     }
-    //TODO
 }

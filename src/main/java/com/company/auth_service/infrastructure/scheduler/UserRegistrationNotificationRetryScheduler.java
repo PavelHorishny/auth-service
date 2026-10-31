@@ -1,12 +1,9 @@
 package com.company.auth_service.infrastructure.scheduler;
 
-import com.company.auth_service.domain.MailEventPublisher;
-import com.company.auth_service.domain.User;
-import com.company.auth_service.domain.UserRepository;
-import com.company.auth_service.domain.UserRegistrationIssuer;
-import com.company.auth_service.domain.UserRegistrationMailEventFactory;
+import com.company.auth_service.domain.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -16,21 +13,16 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class UserRegistrationNotificationRetryScheduler {
 
-    private final UserRepository userRepository;
-    private final MailEventPublisher mailEventPublisher;
-    private final UserRegistrationIssuer userRegistrationIssuer;
+    private final UserNotificationRetryService retryService;
+    @Value("${auth.registration.retry-batch-size:100}")
+    private int batchSize;
 
-    @Scheduled(fixedDelayString = "${auth.registration.retry-interval-ms:60000}")
+
+    @Scheduled(fixedDelayString = "${auth.registration.retry-interval-ms:60000")
     public void retryUnnotified() {
-        for (User user : userRepository.findAllByNotifiedFalse()) {
-            try {
-                mailEventPublisher.publish(UserRegistrationMailEventFactory.from(user));
-                userRegistrationIssuer.markNotified(user);
-                //TODO Czy warto rozdzielic logike tak jak w auth-service?
-            } catch (Exception e) {
-                log.warn("Retry publish failed for new-user event (userId={}), will retry again later",
-                        user.getId(), e);
-            }
-        }
+        int processed;
+        do{
+            processed = retryService.retryBatch(batchSize);
+        }while (processed > 0 && processed == batchSize);
     }
 }

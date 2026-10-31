@@ -29,25 +29,46 @@ public class MockUserRepository implements UserRepository {
 
     @Override
     public Map<UUID, String> findEmailsByIds(Collection<UUID> ids) {
-        return Map.of();
+        Map<UUID,String> emails = new HashMap<>();
+        for(UUID id : ids){
+            User user = byId.get(id);
+            if(user != null){
+                emails.put(id,user.getEmail());
+            }
+        }
+        return emails;
     }
 
     @Override
     public List<PendingUserNotification> lockPendingNotifications(int limit) {
-        return List.of();
+        return byId.values().stream()
+                .filter(u->!u.isNotified())
+                .limit(limit)
+                .map(u->new PendingUserNotification(u.getId(),u.getEventId(), u.getEmail()))
+                .toList();
     }
 
     @Override
     public int markNotified(Collection<UUID> ids) {
-        return 0;
+        int updated = 0;
+        for(UUID id:ids){
+            User user = byId.get(id);
+            if(user != null && !user.isNotified()){
+                user.markNotified();
+                updated++;
+            }
+        }
+        return updated;
     }
 
-//    @Override
-//    public List<User> findAllByNotifiedFalse() {
-//        return byId.values().stream()
-//                .filter(u -> !u.isNotified())
-//                .toList();
-//    }
+/*    @Override
+    public void updatePasswordHash(UUID userId, String passwordHash){
+        User user = byId.get(userId);
+        if(user == null){
+            throw new IllegalStateException("User not found for passwort reset: " + userId);
+        }
+        user.changePassword(passwordHash);
+    }*/
 
     @Override
     public User save(User user) {

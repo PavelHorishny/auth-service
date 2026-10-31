@@ -32,8 +32,10 @@ auth:
   password-reset:
     token-ttl-minutes: 30
     retry-interval-ms: 60000
+    retry-batch-size: 100
   registration:
     retry-interval-ms: 60000
+    retry-batch-size: 100
   jwt:
     secret: ${JWT_SECRET:dev-only-secret-change-me-32-bytes-min}
     expiration-minutes: 60

@@ -1,6 +1,7 @@
 package com.company.auth_service.infrastructure.producer;
 
 import com.company.auth_service.domain.MailEventMessage;
+import com.company.auth_service.domain.MailEventPublishException;
 import com.company.auth_service.domain.MailEventPublisher;
 import com.company.auth_service.infrastructure.producer.mapper.MailEventKafkaMapper;
 import lombok.RequiredArgsConstructor;
@@ -9,6 +10,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
+
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 @Slf4j
 @Component
@@ -21,11 +26,20 @@ public class KafkaMailEventPublisher implements MailEventPublisher {
 
     @Value("${auth.mailing-topic}")
     private String topic;
+    @Value("${auth.mailing-send-timeout-ms:7000}")
+    private long sendTimeoutMs;
 
     @Override
     public void publish(MailEventMessage event) {
-        kafkaTemplate.send(topic, event.eventId(), mailEventKafkaMapper.toKafkaMessage(event));
-        //TODO add get
+        try {
+            kafkaTemplate.send(topic, event.eventId(), mailEventKafkaMapper.toKafkaMessage(event))
+                    .get(sendTimeoutMs, TimeUnit.MILLISECONDS);
+        }catch (InterruptedException e){
+            Thread.currentThread().interrupt();
+            throw new MailEventPublishException(event.eventId(), e);
+        }catch (ExecutionException| TimeoutException e){
+            throw new MailEventPublishException(event.eventId(),e);
+        }
         log.info("Published mail event {} (template={}) to topic {}", event.eventId(), event.templateKey(), topic);
     }
 }

@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class AuthService {
 
-    //private final UserRepository userRepository; //to work with DB
     private final PasswordEncoder passwordEncoder; //to encode passwords
     private final MailEventPublisher mailEventPublisher; //to send events by Kafka
     private final UserRegistrationIssuer userRegistrationIssuer;
@@ -35,5 +34,4 @@ public class AuthService {
 
         return user;
     }
-    //TODO rework method to claim user not request and move to domain
 }

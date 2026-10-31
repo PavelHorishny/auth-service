@@ -1,9 +1,10 @@
 package com.company.auth_service.infrastructure.repository.jpa;
 
+import com.company.auth_service.domain.PendingPasswordResetNotification;
+import com.company.auth_service.domain.PendingUserNotification;
 import com.company.auth_service.domain.User;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import com.company.auth_service.domain.UserRepository;
 import com.company.auth_service.infrastructure.repository.UserJpaDao;
@@ -12,6 +13,8 @@ import com.company.auth_service.infrastructure.repository.jpa.mapper.UserPersist
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 @RequiredArgsConstructor
@@ -32,9 +35,28 @@ public class JpaUserRepository implements UserRepository{
     }
 
     @Override
-    public List<User> findAllByNotifiedFalse() {
-        return dao.findAllByNotifiedFalse().stream().map(mapper::toDomain).toList();
+    public Map<UUID, String> findEmailsByIds(Collection<UUID> ids) {
+        return Map.of();
     }
+
+    @Override
+    @Transactional(propagation = Propagation.MANDATORY)
+    public List<PendingUserNotification> lockPendingNotifications(int limit) {
+        return dao.lockPendingNotifications(limit).stream()
+                .map(r -> new PendingPasswordResetNotification(r.getId(), r.getEventId(), r.getToken(), r.getUserId()))
+                .toList();
+    }
+
+    @Override @Transactional
+    public int markNotified(Collection<UUID> ids) {
+        if (ids.isEmpty()) return 0;
+        return dao.markNotified(ids);
+    }
+
+//    @Override
+//    public List<User> findAllByNotifiedFalse() {
+//        return dao.findAllByNotifiedFalse().stream().map(mapper::toDomain).toList();
+//    }
 
     @Override
     public User save(User user) {

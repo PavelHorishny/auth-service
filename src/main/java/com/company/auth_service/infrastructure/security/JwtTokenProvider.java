@@ -1,5 +1,6 @@
 package com.company.auth_service.infrastructure.security;
 
+import com.company.auth_service.domain.AccessTokenGenerator;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import java.nio.charset.StandardCharsets;
@@ -11,7 +12,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
-public class JwtTokenProvider {
+public class JwtTokenProvider implements AccessTokenGenerator {
 
     private final SecretKey key;
     private final long expirationMinutes;
@@ -22,6 +23,7 @@ public class JwtTokenProvider {
         this.expirationMinutes = expirationMinutes;
     }
 
+    @Override
     public String generateToken(String email) {
         Instant now = Instant.now();
         return Jwts.builder()

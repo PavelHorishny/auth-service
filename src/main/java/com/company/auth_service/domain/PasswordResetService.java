@@ -28,7 +28,7 @@ public class PasswordResetService {
         PasswordResetToken resetToken = tokenIssuer.issue(user);
 
         try {
-            mailEventPublisher.publish(PasswordResetMailEventFactory.from(resetToken));
+            mailEventPublisher.publish(PasswordResetMailEventFactory.of(resetToken));
         } catch (Exception e) {
             log.warn("Failed to publish password reset event for token {}, will retry via scheduler",
                     resetToken.getId(), e);

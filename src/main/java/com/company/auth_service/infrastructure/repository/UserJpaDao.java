@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.Instant;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -27,7 +28,7 @@ public interface UserJpaDao extends JpaRepository<UserEntity, UUID> {
 
     @Modifying(flushAutomatically = true, clearAutomatically = true)
     @Query("UPDATE UserEntity u SET u.notified = true, u.updatedAt = :now WHERE u.id IN :ids AND u.notified = false")
-    int markNotified(@Param("ids") Collection<UUID> ids);
+    int markNotified(@Param("ids") Collection<UUID> ids,@Param("now") Instant now);
 
     @Query("SELECT u.id AS id, u.email AS email FROM UserEntity u WHERE u.id IN :ids")
     List<EmailRow> findEmailsByIds(@Param("ids") Collection<UUID> ids);

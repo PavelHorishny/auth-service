@@ -3,6 +3,7 @@ package com.company.auth_service.infrastructure.repository.jpa;
 import com.company.auth_service.domain.PendingUserNotification;
 import com.company.auth_service.domain.User;
 
+import java.time.Instant;
 import java.util.*;
 
 import com.company.auth_service.domain.UserRepository;
@@ -49,7 +50,7 @@ public class JpaUserRepository implements UserRepository{
     @Override @Transactional
     public int markNotified(Collection<UUID> ids) {
         if (ids.isEmpty()) return 0;
-        return dao.markNotified(ids);
+        return dao.markNotified(ids, Instant.now());
     }
 
 

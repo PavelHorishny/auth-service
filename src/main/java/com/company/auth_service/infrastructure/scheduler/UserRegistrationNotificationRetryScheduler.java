@@ -18,7 +18,7 @@ public class UserRegistrationNotificationRetryScheduler {
     private int batchSize;
 
 
-    @Scheduled(fixedDelayString = "${auth.registration.retry-interval-ms:60000")
+    @Scheduled(fixedDelayString = "${auth.registration.retry-interval-ms:60000}")
     public void retryUnnotified() {
         int processed;
         do{

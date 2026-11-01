@@ -5,10 +5,10 @@ import com.company.auth_service.infrastructure.repository.jpa.entity.PasswordRes
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-@Mapper(componentModel = "spring", uses = UserPersistenceMapper.class)
+@Mapper(componentModel = "spring")
 public interface PasswordResetTokenPersistenceMapper {
 
-    @Mapping(target = "user", ignore = true)
+
     PasswordResetTokenEntity toEntity(PasswordResetToken token);
 
     PasswordResetToken toDomain(PasswordResetTokenEntity entity);

@@ -14,7 +14,7 @@ import lombok.Setter;
 public class PasswordResetToken {
 
     private UUID id;
-    private User user;
+    private UUID userId;
     private String token;
     private Instant expiresAt;
     private boolean used;
@@ -22,26 +22,15 @@ public class PasswordResetToken {
     private boolean notified;
     private Instant createdAt;
 
-    public static PasswordResetToken issue(User user, String token, Instant expiresAt, String eventId) {
+    public static PasswordResetToken issue(UUID userId, String token, Instant expiresAt, String eventId) {
         PasswordResetToken resetToken = new PasswordResetToken();
-        resetToken.setUser(user);
+        resetToken.setUserId(userId);
         resetToken.setToken(token);
         resetToken.setExpiresAt(expiresAt);
         resetToken.setUsed(false);
         resetToken.setEventId(eventId);
         resetToken.setNotified(false);
         return resetToken;
-    }
-
-    public void markUsed() {
-        this.used = true;
-    }
-
-    public void redeem(String newPasswordHash) {
-        user.changePassword(newPasswordHash);
-        //this.used = true;
-        // Mark the token as used after redeeming V1
-        markUsed(); // Mark the token as used after redeeming V2
     }
 
     public void markNotified() {

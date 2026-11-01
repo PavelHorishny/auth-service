@@ -32,6 +32,10 @@ public interface TokenJpaDao extends JpaRepository<PasswordResetTokenEntity, UUI
     int markNotified(@Param("ids") Collection<UUID> ids);
 
     @Modifying(flushAutomatically = true, clearAutomatically = true)
+    @Query("UPDATE PasswordResetTokenEntity t SET t.used = true WHERE t.id = :id AND t.used = false")
+    int markUsed(@Param("id") UUID id);
+
+    @Modifying(flushAutomatically = true, clearAutomatically = true)
     @Query("UPDATE PasswordResetTokenEntity t SET t.notified = true WHERE t.notified = false AND t.expiresAt < :now")
     int markExpiredNotified(@Param("now") Instant now);
 }

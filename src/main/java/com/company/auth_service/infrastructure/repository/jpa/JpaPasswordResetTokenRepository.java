@@ -11,8 +11,6 @@ import java.util.UUID;
 import com.company.auth_service.domain.PasswordResetTokenRepository;
 import com.company.auth_service.domain.PendingPasswordResetNotification;
 import com.company.auth_service.infrastructure.repository.TokenJpaDao;
-import com.company.auth_service.infrastructure.repository.UserJpaDao;
-import com.company.auth_service.infrastructure.repository.jpa.entity.PasswordResetTokenEntity;
 import com.company.auth_service.infrastructure.repository.jpa.mapper.PasswordResetTokenPersistenceMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -26,7 +24,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class JpaPasswordResetTokenRepository implements PasswordResetTokenRepository {
 
     private final TokenJpaDao dao;
-    private final UserJpaDao userDao;
     private final PasswordResetTokenPersistenceMapper mapper;
 
     @Override
@@ -57,8 +54,11 @@ public class JpaPasswordResetTokenRepository implements PasswordResetTokenReposi
 
     @Override
     public PasswordResetToken save(PasswordResetToken passwordResetToken) {
-        PasswordResetTokenEntity entity = mapper.toEntity(passwordResetToken);
-        entity.setUser(userDao.getReferenceById(passwordResetToken.getUser().getId()));
-        return mapper.toDomain(dao.save(entity));
+        return mapper.toDomain(dao.save(mapper.toEntity(passwordResetToken)));
+    }
+
+    @Override
+    public boolean markUsed(UUID id) {
+        return dao.markUsed(id) == 1;
     }
 }

@@ -61,14 +61,14 @@ public class MockUserRepository implements UserRepository {
         return updated;
     }
 
-/*    @Override
+    @Override
     public void updatePasswordHash(UUID userId, String passwordHash){
         User user = byId.get(userId);
         if(user == null){
             throw new IllegalStateException("User not found for passwort reset: " + userId);
         }
         user.changePassword(passwordHash);
-    }*/
+    }
 
     @Override
     public User save(User user) {

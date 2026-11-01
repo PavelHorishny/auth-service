@@ -5,6 +5,8 @@ import com.company.auth_service.domain.*;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Optional;
+import java.util.UUID;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -91,23 +93,37 @@ class PasswordResetServiceTest {
     }
 
     @Test
-    void confirmReset_updatesPasswordAndMarksTokenUsed() {
-        User user = new User();
-        user.setPasswordHash("old-hash");
+    void confirmReset_marksTokenUsedAndUpdatesPasswordById() {
+        UUID userId = UUID.randomUUID();
         PasswordResetToken token = new PasswordResetToken();
-        token.setUser(user);
-        token.setUsed(false);
+        token.setId(UUID.randomUUID());
+        token.setUserId(userId);
         token.setExpiresAt(Instant.now().plus(10, ChronoUnit.MINUTES));
         when(tokenRepository.findByTokenAndUsedFalseAndExpiresAtAfter(eq("tok"), any()))
                 .thenReturn(Optional.of(token));
+        when(tokenRepository.markUsed(token.getId())).thenReturn(true);
         when(passwordEncoder.encode("newPassword")).thenReturn("new-hash");
 
         passwordResetService.confirmReset("tok", "newPassword");
 
-        assertThat(user.getPasswordHash()).isEqualTo("new-hash");
-        assertThat(token.isUsed()).isTrue();
-        verify(userRepository).save(user);
-        verify(tokenRepository).save(token);
+        verify(tokenRepository).markUsed(token.getId());
+        verify(userRepository).updatePasswordHash(userId, "new-hash");
+    }
+
+    @Test
+    void confirmReset_throwsAndKeepsPasswordWhenAnotherRequestRedeemedTokenFirst() {
+        PasswordResetToken token = new PasswordResetToken();
+        token.setId(UUID.randomUUID());
+        token.setUserId(UUID.randomUUID());
+        token.setExpiresAt(Instant.now().plus(10, ChronoUnit.MINUTES));
+        when(tokenRepository.findByTokenAndUsedFalseAndExpiresAtAfter(eq("tok"), any()))
+                .thenReturn(Optional.of(token));
+        when(tokenRepository.markUsed(token.getId())).thenReturn(false);
+
+        assertThatThrownBy(() -> passwordResetService.confirmReset("tok", "newPassword"))
+                .isInstanceOf(InvalidResetTokenException.class);
+
+        verify(userRepository, never()).updatePasswordHash(any(), any());
     }
 
     @Test
@@ -118,6 +134,6 @@ class PasswordResetServiceTest {
         assertThatThrownBy(() -> passwordResetService.confirmReset("bad", "newPassword"))
                 .isInstanceOf(InvalidResetTokenException.class);
 
-        verify(userRepository, never()).save(any());
+        verify(userRepository,never()).updatePasswordHash(any(),any());
     }
 }

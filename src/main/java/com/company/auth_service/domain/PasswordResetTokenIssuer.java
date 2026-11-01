@@ -21,10 +21,10 @@ public class PasswordResetTokenIssuer {
 
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public PasswordResetToken issue(User user) {
+    public PasswordResetToken issue(UUID userId) {
         Instant expiresAt = Instant.now().plus(tokenTtlMinutes, ChronoUnit.MINUTES);
         PasswordResetToken resetToken = PasswordResetToken.issue(
-                user, UUID.randomUUID().toString(), expiresAt, UUID.randomUUID().toString());
+                userId, UUID.randomUUID().toString(), expiresAt, UUID.randomUUID().toString());
         return tokenRepository.save(resetToken);
     }
 

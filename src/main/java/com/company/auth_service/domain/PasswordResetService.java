@@ -25,7 +25,7 @@ public class PasswordResetService {
             return;
         }
 
-        PasswordResetToken resetToken = tokenIssuer.issue(user);
+        PasswordResetToken resetToken = tokenIssuer.issue(user.getId());
 
         try {
             mailEventPublisher.publish(PasswordResetMailEventFactory.from(resetToken, user.getEmail()));
@@ -49,12 +49,16 @@ public class PasswordResetService {
                 .findByTokenAndUsedFalseAndExpiresAtAfter(token, Instant.now())
                 .orElseThrow(InvalidResetTokenException::new);
 
-        User user = resetToken.getUser();
+        if (!tokenRepository.markUsed(resetToken.getId())){
+            throw new InvalidResetTokenException();
+        }
+        userRepository.updatePasswordHash(resetToken.getUserId(),passwordEncoder.encode(newPassword));
+/*        User user = resetToken.getUser();
         //user.changePassword(passwordEncoder.encode(newPassword));
         resetToken.redeem(passwordEncoder.encode(newPassword));
         userRepository.save(user);
 
         //resetToken.markUsed();
-        tokenRepository.save(resetToken);
+        tokenRepository.save(resetToken);*/
     }
 }

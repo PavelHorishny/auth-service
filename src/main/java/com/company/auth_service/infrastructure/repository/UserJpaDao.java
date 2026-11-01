@@ -30,6 +30,10 @@ public interface UserJpaDao extends JpaRepository<UserEntity, UUID> {
     @Query("UPDATE UserEntity u SET u.notified = true, u.updatedAt = :now WHERE u.id IN :ids AND u.notified = false")
     int markNotified(@Param("ids") Collection<UUID> ids,@Param("now") Instant now);
 
+    @Modifying(flushAutomatically = true, clearAutomatically = true)
+    @Query("UPDATE UserEntity u SET u.passwordHash = :hash, u.updatedAt = :now WHERE u.id = :id")
+    int updatePasswordHash(@Param("id") UUID id, @Param("hash") String hash, @Param("now") Instant now);
+
     @Query("SELECT u.id AS id, u.email AS email FROM UserEntity u WHERE u.id IN :ids")
     List<EmailRow> findEmailsByIds(@Param("ids") Collection<UUID> ids);
 }

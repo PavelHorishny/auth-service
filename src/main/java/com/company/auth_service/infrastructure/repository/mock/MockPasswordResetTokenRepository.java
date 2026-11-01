@@ -34,8 +34,8 @@ public class MockPasswordResetTokenRepository implements PasswordResetTokenRepos
                 .filter(t->!t.isNotified())
                 .limit(limit)
                 .map(t->new PendingPasswordResetNotification(
-                        t.getId(),t.getEventId(),t.getToken(),t.getUser().getId()
-                )).toList();
+                        t.getId(),t.getEventId(),t.getToken(),t.getUserId()))
+                .toList();
     }
 
     @Override
@@ -70,6 +70,19 @@ public class MockPasswordResetTokenRepository implements PasswordResetTokenRepos
         passwordResetToken.setId(id);
         tokens.put(id, passwordResetToken);
         return passwordResetToken;
+    }
+
+    @Override
+    public boolean markUsed(UUID id) {
+        java.util.concurrent.atomic.AtomicBoolean won = new java.util.concurrent.atomic.AtomicBoolean();
+        tokens.computeIfPresent(id, (key, token) -> {
+            if (!token.isUsed()) {
+                token.setUsed(true);
+                won.set(true);
+            }
+            return token;
+        });
+        return won.get();
     }
 
 }

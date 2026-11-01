@@ -62,4 +62,12 @@ public class JpaUserRepository implements UserRepository{
         UserEntity entity = mapper.toEntity(user);
         return mapper.toDomain(dao.save(entity));
     }
+
+    @Override
+    @Transactional
+    public void updatePasswordHash(UUID userId, String passwordHash) {
+        if (dao.updatePasswordHash(userId, passwordHash, Instant.now()) != 1) {
+            throw new IllegalStateException("User not found for password reset: " + userId);
+        }
+    }
 }

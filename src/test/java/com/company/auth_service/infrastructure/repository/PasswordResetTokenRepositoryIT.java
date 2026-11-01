@@ -150,10 +150,20 @@ class PasswordResetTokenRepositoryIT {
 
     private PasswordResetTokenEntity persistToken(UserEntity user, String value, boolean used, Instant expiresAt) {
         PasswordResetTokenEntity token = new PasswordResetTokenEntity();
-        token.setUser(user);
+        token.setUserId(user.getId());
         token.setToken(value);
         token.setUsed(used);
         token.setExpiresAt(expiresAt);
         return tokenRepository.save(token);
+    }
+
+    @Test
+    void markUsed_succeedsOnceThenReportsZeroRows() {
+        PasswordResetTokenEntity token = persistToken(persistUser("once@example.com"), "once", false,
+                Instant.now().plus(10, ChronoUnit.MINUTES));
+
+        assertThat(tokenRepository.markUsed(token.getId())).isEqualTo(1);
+        assertThat(tokenRepository.markUsed(token.getId())).isEqualTo(0);
+        assertThat(tokenRepository.findById(token.getId()).orElseThrow().isUsed()).isTrue();
     }
 }

@@ -25,10 +25,10 @@ public class UserEntity {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 254)
     private String email;
 
-    @Column(name = "password_hash", nullable = false)
+    @Column(name = "password_hash", nullable = false, length = 60)
     private String passwordHash;
 
     @Enumerated(EnumType.STRING)
@@ -38,7 +38,7 @@ public class UserEntity {
     @Column(nullable = false)
     private boolean enabled;
 
-    @Column(name = "event_id")
+    @Column(name = "event_id", length = 36)
     private String eventId;
 
     @Column(nullable = false)

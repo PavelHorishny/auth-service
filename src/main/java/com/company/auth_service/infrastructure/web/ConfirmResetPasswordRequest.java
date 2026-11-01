@@ -1,10 +1,9 @@
 package com.company.auth_service.infrastructure.web;
 
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.Pattern;
 
 public record ConfirmResetPasswordRequest(
         @NotBlank String token,
-        @NotBlank @Size(min = 8) String newPassword
+        @NotBlank @Pattern(regexp = PasswordRules.REGEX, message = PasswordRules.MESSAGE) String newPassword
 ) {}
-//TODO add new password validation rules

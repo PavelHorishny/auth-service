@@ -24,10 +24,10 @@ public class PasswordResetTokenEntity {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(name = "user_id", nullable = false)
+    @Column(name = "user_id", length = 36)
     private UUID userId;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 36)
     private String token;
 
     @Column(name = "expires_at", nullable = false)

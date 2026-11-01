@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="006-tighten-column-lengths" author="auth-service">
+        <comment>
+            email 254 (SMTP path limit), password_hash 60 (BCrypt), token/event_id 36 (UUID string).
+        </comment>
+        <modifyDataType tableName="users" columnName="email" newDataType="varchar(254)"/>
+        <modifyDataType tableName="users" columnName="password_hash" newDataType="varchar(60)"/>
+        <modifyDataType tableName="users" columnName="event_id" newDataType="varchar(36)"/>
+        <modifyDataType tableName="password_reset_tokens" columnName="token" newDataType="varchar(36)"/>
+        <modifyDataType tableName="password_reset_tokens" columnName="event_id" newDataType="varchar(36)"/>
+        <rollback>
+            <modifyDataType tableName="users" columnName="email" newDataType="varchar(255)"/>
+            <modifyDataType tableName="users" columnName="password_hash" newDataType="varchar(255)"/>
+            <modifyDataType tableName="users" columnName="event_id" newDataType="varchar(255)"/>
+            <modifyDataType tableName="password_reset_tokens" columnName="token" newDataType="varchar(255)"/>
+            <modifyDataType tableName="password_reset_tokens" columnName="event_id" newDataType="varchar(255)"/>
+        </rollback>
+    </changeSet>
+</databaseChangeLog>

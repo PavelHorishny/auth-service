@@ -1,7 +1,7 @@
 package com.company.auth_service.infrastructure.producer;
 
-import com.company.auth_service.domain.mail_event.MailEventMessage;
-import com.company.auth_service.domain.mail_event.MailEventPublisher;
+import com.company.auth_service.domain.mailevent.MailEventMessage;
+import com.company.auth_service.domain.mailevent.MailEventPublisher;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;

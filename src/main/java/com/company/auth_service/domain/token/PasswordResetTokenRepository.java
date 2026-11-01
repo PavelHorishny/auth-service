@@ -1,7 +1,4 @@
-package com.company.auth_service.domain.repo;
-
-import com.company.auth_service.domain.token.PendingPasswordResetNotification;
-import com.company.auth_service.domain.token.PasswordResetToken;
+package com.company.auth_service.domain.token;
 
 import java.time.Instant;
 import java.util.Collection;

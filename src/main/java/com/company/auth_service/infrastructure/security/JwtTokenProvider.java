@@ -1,6 +1,6 @@
 package com.company.auth_service.infrastructure.security;
 
-import com.company.auth_service.domain.token.AccessTokenGenerator;
+import com.company.auth_service.domain.auth.AccessTokenGenerator;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import java.nio.charset.StandardCharsets;

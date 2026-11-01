@@ -1,12 +1,13 @@
 package com.company.auth_service.infrastructure.service;
 
 import com.company.auth_service.domain.token.PasswordResetToken;
-import com.company.auth_service.domain.repo.PasswordResetTokenRepository;
+import com.company.auth_service.domain.token.PasswordResetTokenRepository;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.UUID;
 
+import com.company.auth_service.domain.token.PasswordResetTokenIssuer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -25,11 +26,11 @@ class PasswordResetTokenIssuerTest {
     @Mock
     private PasswordResetTokenRepository tokenRepository;
 
-    private PasswordResetToken.PasswordResetTokenIssuer tokenIssuer;
+    private PasswordResetTokenIssuer tokenIssuer;
 
     @BeforeEach
     void setUp() {
-        tokenIssuer = new PasswordResetToken.PasswordResetTokenIssuer(tokenRepository);
+        tokenIssuer = new PasswordResetTokenIssuer(tokenRepository);
         ReflectionTestUtils.setField(tokenIssuer, "tokenTtlMinutes", TOKEN_TTL_MINUTES);
     }
 

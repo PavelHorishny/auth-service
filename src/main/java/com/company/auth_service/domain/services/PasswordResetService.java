@@ -3,11 +3,12 @@ package com.company.auth_service.domain.services;
 import java.time.Instant;
 
 import com.company.auth_service.domain.exceptions.InvalidResetTokenException;
-import com.company.auth_service.domain.mail_event.MailEventPublisher;
-import com.company.auth_service.domain.mail_event.PasswordResetMailEventFactory;
-import com.company.auth_service.domain.repo.PasswordResetTokenRepository;
-import com.company.auth_service.domain.repo.UserRepository;
+import com.company.auth_service.domain.mailevent.MailEventPublisher;
+import com.company.auth_service.domain.mailevent.PasswordResetMailEventFactory;
+import com.company.auth_service.domain.token.PasswordResetTokenRepository;
+import com.company.auth_service.domain.user.UserRepository;
 import com.company.auth_service.domain.token.PasswordResetToken;
+import com.company.auth_service.domain.token.PasswordResetTokenIssuer;
 import com.company.auth_service.domain.user.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,7 +25,7 @@ public class PasswordResetService {
     private final PasswordResetTokenRepository tokenRepository;
     private final MailEventPublisher mailEventPublisher;
     private final PasswordEncoder passwordEncoder;
-    private final PasswordResetToken.PasswordResetTokenIssuer tokenIssuer;
+    private final PasswordResetTokenIssuer tokenIssuer;
 
     public void requestReset(String email) {
         User user = userRepository.findByEmail(email).orElse(null);

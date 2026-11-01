@@ -1,9 +1,9 @@
 package com.company.auth_service.domain.services;
 
-import com.company.auth_service.domain.mail_event.MailEventPublisher;
-import com.company.auth_service.domain.mail_event.PasswordResetMailEventFactory;
-import com.company.auth_service.domain.repo.PasswordResetTokenRepository;
-import com.company.auth_service.domain.repo.UserRepository;
+import com.company.auth_service.domain.mailevent.MailEventPublisher;
+import com.company.auth_service.domain.mailevent.PasswordResetMailEventFactory;
+import com.company.auth_service.domain.token.PasswordResetTokenRepository;
+import com.company.auth_service.domain.user.UserRepository;
 import com.company.auth_service.domain.token.PendingPasswordResetNotification;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

@@ -1,4 +1,4 @@
-package com.company.auth_service.domain.mail_event;
+package com.company.auth_service.domain.mailevent;
 
 import com.company.auth_service.domain.token.PendingPasswordResetNotification;
 import com.company.auth_service.domain.token.PasswordResetToken;

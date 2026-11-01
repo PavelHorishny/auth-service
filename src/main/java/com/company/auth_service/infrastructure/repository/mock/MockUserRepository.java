@@ -2,7 +2,7 @@ package com.company.auth_service.infrastructure.repository.mock;
 
 import com.company.auth_service.domain.user.PendingUserNotification;
 import com.company.auth_service.domain.user.User;
-import com.company.auth_service.domain.repo.UserRepository;
+import com.company.auth_service.domain.user.UserRepository;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Repository;
 

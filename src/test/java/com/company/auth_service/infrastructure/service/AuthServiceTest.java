@@ -1,11 +1,11 @@
 package com.company.auth_service.infrastructure.service;
 
 import com.company.auth_service.domain.exceptions.EmailAlreadyRegisteredException;
-import com.company.auth_service.domain.mail_event.Locales;
-import com.company.auth_service.domain.mail_event.MailEventMessage;
-import com.company.auth_service.domain.mail_event.MailEventPublisher;
-import com.company.auth_service.domain.mail_event.TemplateKeys;
-import com.company.auth_service.domain.repo.UserRepository;
+import com.company.auth_service.domain.mailevent.Locales;
+import com.company.auth_service.domain.mailevent.MailEventMessage;
+import com.company.auth_service.domain.mailevent.MailEventPublisher;
+import com.company.auth_service.domain.mailevent.TemplateKeys;
+import com.company.auth_service.domain.user.UserRepository;
 import com.company.auth_service.domain.services.AuthService;
 import com.company.auth_service.domain.user.Roles;
 import com.company.auth_service.domain.user.User;

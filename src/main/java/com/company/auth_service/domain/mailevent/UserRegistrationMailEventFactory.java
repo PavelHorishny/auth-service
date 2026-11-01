@@ -1,8 +1,7 @@
-package com.company.auth_service.domain.user;
+package com.company.auth_service.domain.mailevent;
 
-import com.company.auth_service.domain.mail_event.Locales;
-import com.company.auth_service.domain.mail_event.MailEventMessage;
-import com.company.auth_service.domain.mail_event.TemplateKeys;
+import com.company.auth_service.domain.user.PendingUserNotification;
+import com.company.auth_service.domain.user.User;
 
 import java.util.Map;
 

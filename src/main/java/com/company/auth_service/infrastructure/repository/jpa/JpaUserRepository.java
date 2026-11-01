@@ -7,7 +7,7 @@ import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import com.company.auth_service.domain.repo.UserRepository;
+import com.company.auth_service.domain.user.UserRepository;
 import com.company.auth_service.infrastructure.repository.UserJpaDao;
 import com.company.auth_service.infrastructure.repository.jpa.entity.UserEntity;
 import com.company.auth_service.infrastructure.repository.jpa.mapper.UserPersistenceMapper;

@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import com.company.auth_service.domain.repo.PasswordResetTokenRepository;
+import com.company.auth_service.domain.token.PasswordResetTokenRepository;
 import com.company.auth_service.domain.token.PendingPasswordResetNotification;
 import com.company.auth_service.infrastructure.repository.TokenJpaDao;
 import com.company.auth_service.infrastructure.repository.jpa.mapper.PasswordResetTokenPersistenceMapper;

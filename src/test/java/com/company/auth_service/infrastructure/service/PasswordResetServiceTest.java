@@ -6,13 +6,14 @@ import java.util.Optional;
 import java.util.UUID;
 
 import com.company.auth_service.domain.exceptions.InvalidResetTokenException;
-import com.company.auth_service.domain.mail_event.MailEventMessage;
-import com.company.auth_service.domain.mail_event.MailEventPublisher;
-import com.company.auth_service.domain.mail_event.TemplateKeys;
-import com.company.auth_service.domain.repo.PasswordResetTokenRepository;
-import com.company.auth_service.domain.repo.UserRepository;
+import com.company.auth_service.domain.mailevent.MailEventMessage;
+import com.company.auth_service.domain.mailevent.MailEventPublisher;
+import com.company.auth_service.domain.mailevent.TemplateKeys;
+import com.company.auth_service.domain.token.PasswordResetTokenRepository;
+import com.company.auth_service.domain.user.UserRepository;
 import com.company.auth_service.domain.services.PasswordResetService;
 import com.company.auth_service.domain.token.PasswordResetToken;
+import com.company.auth_service.domain.token.PasswordResetTokenIssuer;
 import com.company.auth_service.domain.user.User;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -42,7 +43,7 @@ class PasswordResetServiceTest {
     @Mock
     private PasswordEncoder passwordEncoder;
     @Mock
-    private PasswordResetToken.PasswordResetTokenIssuer tokenIssuer;
+    private PasswordResetTokenIssuer tokenIssuer;
 
     private PasswordResetService passwordResetService;
 
@@ -65,6 +66,7 @@ class PasswordResetServiceTest {
     void requestReset_issuesTokenPublishesEventAndMarksNotified() {
         User user = new User();
         user.setEmail("user@example.com");
+        user.setId(UUID.randomUUID());
         when(userRepository.findByEmail("user@example.com")).thenReturn(Optional.of(user));
 
         PasswordResetToken issuedToken = PasswordResetToken.issue(

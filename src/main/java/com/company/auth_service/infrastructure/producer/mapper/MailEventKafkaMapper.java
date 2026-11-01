@@ -1,6 +1,6 @@
 package com.company.auth_service.infrastructure.producer.mapper;
 
-import com.company.auth_service.domain.mail_event.MailEventMessage;
+import com.company.auth_service.domain.mailevent.MailEventMessage;
 import com.company.auth_service.infrastructure.producer.MailEventKafkaMessage;
 import org.mapstruct.Mapper;
 

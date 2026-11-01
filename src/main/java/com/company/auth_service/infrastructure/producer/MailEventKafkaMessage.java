@@ -1,7 +1,7 @@
 package com.company.auth_service.infrastructure.producer;
 
-import com.company.auth_service.domain.mail_event.Locales;
-import com.company.auth_service.domain.mail_event.TemplateKeys;
+import com.company.auth_service.domain.mailevent.Locales;
+import com.company.auth_service.domain.mailevent.TemplateKeys;
 import java.util.Map;
 import lombok.Builder;
 

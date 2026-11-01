@@ -1,7 +1,7 @@
 package com.company.auth_service.infrastructure.repository;
 
 import com.company.auth_service.TestcontainersConfiguration;
-import com.company.auth_service.domain.user.Roles;
+import com.company.auth_service.fixtures.UserFixture;
 import com.company.auth_service.infrastructure.repository.jpa.entity.UserEntity;
 import java.time.Instant;
 import java.util.List;
@@ -11,9 +11,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest;
 import org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabase;
 import org.springframework.context.annotation.Import;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.test.context.ActiveProfiles;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
@@ -26,22 +28,33 @@ class UserJpaDaoIT {
 
     @Test
     void lockPendingNotifications_returnsOnlyUnnotifiedUsersAsProjection() {
-        UserEntity pending = persistUser("pending@example.com", "event-1", false);
-        persistUser("done@example.com", "event-2", true);
+        UserEntity pending = userDao.save(UserFixture.getInstance()
+                .withEmail("pending@example.com").toEntity());
+        userDao.save(UserFixture.getInstance().withNotified(true).toEntity());
         userDao.flush();
 
         List<UserJpaDao.PendingNotificationRow> rows = userDao.lockPendingNotifications(10);
 
         assertThat(rows).hasSize(1);
         assertThat(rows.get(0).getId()).isEqualTo(pending.getId());
-        assertThat(rows.get(0).getEventId()).isEqualTo("event-1");
+        assertThat(rows.get(0).getEventId()).isEqualTo(pending.getEventId());
         assertThat(rows.get(0).getEmail()).isEqualTo("pending@example.com");
     }
 
     @Test
+    void lockPendingNotifications_respectsTheLimit() {
+        for (int i = 0; i < 3; i++) {
+            userDao.save(UserFixture.getInstance().toEntity());
+        }
+        userDao.flush();
+
+        assertThat(userDao.lockPendingNotifications(2)).hasSize(2);
+    }
+
+    @Test
     void markNotified_flipsOnlyGivenUsers() {
-        UserEntity first = persistUser("first@example.com", "event-1", false);
-        UserEntity second = persistUser("second@example.com", "event-2", false);
+        UserEntity first = userDao.save(UserFixture.getInstance().toEntity());
+        UserEntity second = userDao.save(UserFixture.getInstance().toEntity());
 
         int updated = userDao.markNotified(List.of(first.getId()), Instant.now());
 
@@ -52,7 +65,8 @@ class UserJpaDaoIT {
 
     @Test
     void findEmailsByIds_returnsKnownUsersOnly() {
-        UserEntity user = persistUser("known@example.com", "event-1", false);
+        UserEntity user = userDao.save(UserFixture.getInstance()
+                .withEmail("known@example.com").toEntity());
 
         List<UserJpaDao.EmailRow> rows = userDao.findEmailsByIds(List.of(user.getId(), UUID.randomUUID()));
 
@@ -62,25 +76,42 @@ class UserJpaDaoIT {
 
     @Test
     void updatePasswordHash_changesOnlyThatUser() {
-        UserEntity target = persistUser("target@example.com", "event-1", false);
-        UserEntity other = persistUser("other@example.com", "event-2", false);
+        UserEntity target = userDao.save(UserFixture.getInstance().withPasswordHash("old-hash").toEntity());
+        UserEntity other = userDao.save(UserFixture.getInstance().withPasswordHash("old-hash").toEntity());
 
         int updated = userDao.updatePasswordHash(target.getId(), "new-hash", Instant.now());
 
         assertThat(updated).isEqualTo(1);
         assertThat(userDao.findById(target.getId()).orElseThrow().getPasswordHash()).isEqualTo("new-hash");
-        assertThat(userDao.findById(other.getId()).orElseThrow().getPasswordHash()).isEqualTo("hash");
+        assertThat(userDao.findById(other.getId()).orElseThrow().getPasswordHash()).isEqualTo("old-hash");
         assertThat(userDao.updatePasswordHash(UUID.randomUUID(), "x", Instant.now())).isEqualTo(0);
     }
 
-    private UserEntity persistUser(String email, String eventId, boolean notified) {
-        UserEntity user = new UserEntity();
-        user.setEmail(email);
-        user.setPasswordHash("hash");
-        user.setRole(Roles.USER);
-        user.setEnabled(true);
-        user.setEventId(eventId);
-        user.setNotified(notified);
-        return userDao.save(user);
+    // ---------- ограничения схемы (миграции 001 и 006) ----------
+
+    @Test
+    void duplicateEmail_isRejectedByUniqueConstraint() {
+        userDao.saveAndFlush(UserFixture.getInstance().withEmail("dup@example.com").toEntity());
+
+        assertThatThrownBy(() -> userDao.saveAndFlush(
+                UserFixture.getInstance().withEmail("dup@example.com").toEntity()))
+                .isInstanceOf(DataIntegrityViolationException.class);
+    }
+
+    @Test
+    void emailLongerThan254_isRejectedByDatabase() {
+        String tooLong = "a".repeat(255);
+
+        assertThatThrownBy(() -> userDao.saveAndFlush(UserFixture.getInstance().withEmail(tooLong).toEntity()))
+                .isInstanceOf(DataIntegrityViolationException.class);
+    }
+
+    @Test
+    void emailOfExactly254_isAccepted() {
+        String maxLength = "a".repeat(254);
+
+        UserEntity saved = userDao.saveAndFlush(UserFixture.getInstance().withEmail(maxLength).toEntity());
+
+        assertThat(userDao.findById(saved.getId()).orElseThrow().getEmail()).hasSize(254);
     }
 }

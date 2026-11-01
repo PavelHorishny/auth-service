@@ -1,8 +1,8 @@
 package com.company.auth_service.infrastructure.producer;
 
-import com.company.auth_service.domain.MailEventMessage;
-import com.company.auth_service.domain.MailEventPublishException;
-import com.company.auth_service.domain.MailEventPublisher;
+import com.company.auth_service.domain.mail_event.MailEventMessage;
+import com.company.auth_service.domain.exceptions.MailEventPublishException;
+import com.company.auth_service.domain.mail_event.MailEventPublisher;
 import com.company.auth_service.infrastructure.producer.mapper.MailEventKafkaMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

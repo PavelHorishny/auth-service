@@ -1,7 +1,9 @@
-package com.company.auth_service.domain;
+package com.company.auth_service.domain.user;
 
 import java.util.List;
 import java.util.UUID;
+
+import com.company.auth_service.domain.repo.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;

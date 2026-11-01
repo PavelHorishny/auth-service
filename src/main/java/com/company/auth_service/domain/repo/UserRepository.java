@@ -1,4 +1,7 @@
-package com.company.auth_service.domain;
+package com.company.auth_service.domain.repo;
+
+import com.company.auth_service.domain.user.PendingUserNotification;
+import com.company.auth_service.domain.user.User;
 
 import java.util.*;
 

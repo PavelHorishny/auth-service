@@ -1,6 +1,6 @@
 package com.company.auth_service.app;
 
-import com.company.auth_service.domain.PasswordResetService;
+import com.company.auth_service.domain.services.PasswordResetService;
 import com.company.auth_service.infrastructure.web.ConfirmResetPasswordRequest;
 import com.company.auth_service.infrastructure.web.ResetPasswordRequest;
 import jakarta.validation.Valid;

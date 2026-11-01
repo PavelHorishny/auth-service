@@ -1,4 +1,4 @@
-package com.company.auth_service.domain;
+package com.company.auth_service.domain.mail_event;
 
 import lombok.Getter;
 

@@ -1,5 +1,9 @@
-package com.company.auth_service.domain;
+package com.company.auth_service.domain.services;
 
+import com.company.auth_service.domain.mail_event.MailEventPublisher;
+import com.company.auth_service.domain.user.PendingUserNotification;
+import com.company.auth_service.domain.user.UserRegistrationMailEventFactory;
+import com.company.auth_service.domain.repo.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

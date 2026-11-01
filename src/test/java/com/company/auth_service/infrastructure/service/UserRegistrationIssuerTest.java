@@ -1,9 +1,9 @@
 package com.company.auth_service.infrastructure.service;
 
-import com.company.auth_service.domain.Roles;
-import com.company.auth_service.domain.User;
-import com.company.auth_service.domain.UserRegistrationIssuer;
-import com.company.auth_service.domain.UserRepository;
+import com.company.auth_service.domain.user.Roles;
+import com.company.auth_service.domain.user.User;
+import com.company.auth_service.domain.user.UserRegistrationIssuer;
+import com.company.auth_service.domain.repo.UserRepository;
 import java.util.List;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;

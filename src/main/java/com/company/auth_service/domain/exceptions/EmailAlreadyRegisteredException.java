@@ -1,4 +1,4 @@
-package com.company.auth_service.domain;
+package com.company.auth_service.domain.exceptions;
 
 public class EmailAlreadyRegisteredException extends RuntimeException {
     public EmailAlreadyRegisteredException(String email) {

@@ -1,12 +1,19 @@
 package com.company.auth_service.infrastructure.service;
 
-import com.company.auth_service.domain.*;
-
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 import java.util.UUID;
 
+import com.company.auth_service.domain.exceptions.InvalidResetTokenException;
+import com.company.auth_service.domain.mail_event.MailEventMessage;
+import com.company.auth_service.domain.mail_event.MailEventPublisher;
+import com.company.auth_service.domain.mail_event.TemplateKeys;
+import com.company.auth_service.domain.repo.PasswordResetTokenRepository;
+import com.company.auth_service.domain.repo.UserRepository;
+import com.company.auth_service.domain.services.PasswordResetService;
+import com.company.auth_service.domain.token.PasswordResetToken;
+import com.company.auth_service.domain.user.User;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -35,7 +42,7 @@ class PasswordResetServiceTest {
     @Mock
     private PasswordEncoder passwordEncoder;
     @Mock
-    private PasswordResetTokenIssuer tokenIssuer;
+    private PasswordResetToken.PasswordResetTokenIssuer tokenIssuer;
 
     private PasswordResetService passwordResetService;
 
@@ -61,8 +68,8 @@ class PasswordResetServiceTest {
         when(userRepository.findByEmail("user@example.com")).thenReturn(Optional.of(user));
 
         PasswordResetToken issuedToken = PasswordResetToken.issue(
-                user, "token-value", Instant.now().plus(30, ChronoUnit.MINUTES), "event-123");
-        when(tokenIssuer.issue(user)).thenReturn(issuedToken);
+                user.getId(), "token-value", Instant.now().plus(30, ChronoUnit.MINUTES), "event-123");
+        when(tokenIssuer.issue(user.getId())).thenReturn(issuedToken);
 
         passwordResetService.requestReset("user@example.com");
 
@@ -82,8 +89,8 @@ class PasswordResetServiceTest {
         when(userRepository.findByEmail("user@example.com")).thenReturn(Optional.of(user));
 
         PasswordResetToken issuedToken = PasswordResetToken.issue(
-                user, "token-value", Instant.now().plus(30, ChronoUnit.MINUTES), "event-123");
-        when(tokenIssuer.issue(user)).thenReturn(issuedToken);
+                user.getId(), "token-value", Instant.now().plus(30, ChronoUnit.MINUTES), "event-123");
+        when(tokenIssuer.issue(user.getId())).thenReturn(issuedToken);
         org.mockito.Mockito.doThrow(new RuntimeException("kafka down"))
                 .when(mailEventPublisher).publish(any());
 

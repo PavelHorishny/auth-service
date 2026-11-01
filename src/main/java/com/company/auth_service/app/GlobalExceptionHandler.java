@@ -1,7 +1,7 @@
 package com.company.auth_service.app;
 
-import com.company.auth_service.domain.EmailAlreadyRegisteredException;
-import com.company.auth_service.domain.InvalidResetTokenException;
+import com.company.auth_service.domain.exceptions.EmailAlreadyRegisteredException;
+import com.company.auth_service.domain.exceptions.InvalidResetTokenException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

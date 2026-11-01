@@ -1,6 +1,12 @@
-package com.company.auth_service.domain;
+package com.company.auth_service.domain.services;
 
 
+import com.company.auth_service.domain.exceptions.EmailAlreadyRegisteredException;
+import com.company.auth_service.domain.mail_event.MailEventPublisher;
+import com.company.auth_service.domain.repo.UserRepository;
+import com.company.auth_service.domain.user.User;
+import com.company.auth_service.domain.user.UserRegistrationIssuer;
+import com.company.auth_service.domain.user.UserRegistrationMailEventFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;

@@ -1,8 +1,8 @@
 package com.company.auth_service.infrastructure.repository.mock;
 
-import com.company.auth_service.domain.PendingUserNotification;
-import com.company.auth_service.domain.User;
-import com.company.auth_service.domain.UserRepository;
+import com.company.auth_service.domain.user.PendingUserNotification;
+import com.company.auth_service.domain.user.User;
+import com.company.auth_service.domain.repo.UserRepository;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Repository;
 
@@ -65,7 +65,7 @@ public class MockUserRepository implements UserRepository {
     public void updatePasswordHash(UUID userId, String passwordHash){
         User user = byId.get(userId);
         if(user == null){
-            throw new IllegalStateException("User not found for passwort reset: " + userId);
+            throw new IllegalStateException("User not found for password reset: " + userId);
         }
         user.changePassword(passwordHash);
     }

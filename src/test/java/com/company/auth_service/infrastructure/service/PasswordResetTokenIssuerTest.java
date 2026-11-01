@@ -1,9 +1,7 @@
 package com.company.auth_service.infrastructure.service;
 
-import com.company.auth_service.domain.PasswordResetToken;
-import com.company.auth_service.domain.PasswordResetTokenIssuer;
-import com.company.auth_service.domain.PasswordResetTokenRepository;
-import com.company.auth_service.domain.User;
+import com.company.auth_service.domain.token.PasswordResetToken;
+import com.company.auth_service.domain.repo.PasswordResetTokenRepository;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
@@ -27,26 +25,26 @@ class PasswordResetTokenIssuerTest {
     @Mock
     private PasswordResetTokenRepository tokenRepository;
 
-    private PasswordResetTokenIssuer tokenIssuer;
+    private PasswordResetToken.PasswordResetTokenIssuer tokenIssuer;
 
     @BeforeEach
     void setUp() {
-        tokenIssuer = new PasswordResetTokenIssuer(tokenRepository);
+        tokenIssuer = new PasswordResetToken.PasswordResetTokenIssuer(tokenRepository);
         ReflectionTestUtils.setField(tokenIssuer, "tokenTtlMinutes", TOKEN_TTL_MINUTES);
-        when(tokenRepository.save(org.mockito.ArgumentMatchers.any()))
-                .thenAnswer(invocation -> invocation.getArgument(0));
     }
 
     @Test
     void issue_buildsUnnotifiedUnusedTokenWithConfiguredTtlAndPersistsIt() {
-        User user = new User();
-        user.setEmail("user@example.com");
+
+        when(tokenRepository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
+        UUID userId = UUID.randomUUID();
+
 
         Instant before = Instant.now();
-        PasswordResetToken token = tokenIssuer.issue(user);
+        PasswordResetToken token = tokenIssuer.issue(userId);
         Instant after = Instant.now();
 
-        assertThat(token.getUser()).isEqualTo(user);
+        assertThat(token.getUserId()).isEqualTo(userId);
         assertThat(token.isUsed()).isFalse();
         assertThat(token.isNotified()).isFalse();
         assertThat(token.getEventId()).isNotBlank();
@@ -60,7 +58,7 @@ class PasswordResetTokenIssuerTest {
 
     @Test
     void markNotified_flipsFlagWithSingleUpdateInsteadOfRewritingTheRow() {
-        PasswordResetToken token = PasswordResetToken.issue(new User(), "tok", Instant.now(), "event-1");
+        PasswordResetToken token = PasswordResetToken.issue(UUID.randomUUID(), "tok", Instant.now(), "event-1");
         token.setId(UUID.randomUUID());
 
         tokenIssuer.markNotified(token);

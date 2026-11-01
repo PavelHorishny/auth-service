@@ -1,6 +1,6 @@
 package com.company.auth_service.infrastructure.scheduler;
 
-import com.company.auth_service.domain.PasswordResetNotificationRetryService;
+import com.company.auth_service.domain.services.PasswordResetNotificationRetryService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

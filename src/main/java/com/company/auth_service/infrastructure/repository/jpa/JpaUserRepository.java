@@ -1,13 +1,13 @@
 package com.company.auth_service.infrastructure.repository.jpa;
 
-import com.company.auth_service.domain.PendingUserNotification;
-import com.company.auth_service.domain.User;
+import com.company.auth_service.domain.user.PendingUserNotification;
+import com.company.auth_service.domain.user.User;
 
 import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import com.company.auth_service.domain.UserRepository;
+import com.company.auth_service.domain.repo.UserRepository;
 import com.company.auth_service.infrastructure.repository.UserJpaDao;
 import com.company.auth_service.infrastructure.repository.jpa.entity.UserEntity;
 import com.company.auth_service.infrastructure.repository.jpa.mapper.UserPersistenceMapper;

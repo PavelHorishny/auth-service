@@ -1,6 +1,6 @@
 package com.company.auth_service.infrastructure.web.mapper;
 
-import com.company.auth_service.domain.User;
+import com.company.auth_service.domain.user.User;
 import com.company.auth_service.infrastructure.web.RegisterRequest;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

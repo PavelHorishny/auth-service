@@ -1,6 +1,6 @@
 package com.company.auth_service.infrastructure.repository.jpa.entity;
 
-import com.company.auth_service.domain.Roles;
+import com.company.auth_service.domain.user.Roles;
 import jakarta.persistence.*;
 import java.time.Instant;
 import java.util.UUID;

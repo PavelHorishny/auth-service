@@ -1,7 +1,14 @@
-package com.company.auth_service.domain;
+package com.company.auth_service.domain.services;
 
 import java.time.Instant;
 
+import com.company.auth_service.domain.exceptions.InvalidResetTokenException;
+import com.company.auth_service.domain.mail_event.MailEventPublisher;
+import com.company.auth_service.domain.mail_event.PasswordResetMailEventFactory;
+import com.company.auth_service.domain.repo.PasswordResetTokenRepository;
+import com.company.auth_service.domain.repo.UserRepository;
+import com.company.auth_service.domain.token.PasswordResetToken;
+import com.company.auth_service.domain.user.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -17,7 +24,7 @@ public class PasswordResetService {
     private final PasswordResetTokenRepository tokenRepository;
     private final MailEventPublisher mailEventPublisher;
     private final PasswordEncoder passwordEncoder;
-    private final PasswordResetTokenIssuer tokenIssuer;
+    private final PasswordResetToken.PasswordResetTokenIssuer tokenIssuer;
 
     public void requestReset(String email) {
         User user = userRepository.findByEmail(email).orElse(null);
@@ -53,12 +60,5 @@ public class PasswordResetService {
             throw new InvalidResetTokenException();
         }
         userRepository.updatePasswordHash(resetToken.getUserId(),passwordEncoder.encode(newPassword));
-/*        User user = resetToken.getUser();
-        //user.changePassword(passwordEncoder.encode(newPassword));
-        resetToken.redeem(passwordEncoder.encode(newPassword));
-        userRepository.save(user);
-
-        //resetToken.markUsed();
-        tokenRepository.save(resetToken);*/
     }
 }

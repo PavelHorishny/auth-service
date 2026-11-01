@@ -1,7 +1,6 @@
 package com.company.auth_service.infrastructure.scheduler;
 
-import com.company.auth_service.domain.*;
-
+import com.company.auth_service.domain.services.PasswordResetNotificationRetryService;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.beans.factory.annotation.Value;

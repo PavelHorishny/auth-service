@@ -1,4 +1,7 @@
-package com.company.auth_service.domain;
+package com.company.auth_service.domain.mail_event;
+
+import com.company.auth_service.domain.token.PendingPasswordResetNotification;
+import com.company.auth_service.domain.token.PasswordResetToken;
 
 import java.util.Map;
 

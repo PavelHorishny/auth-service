@@ -1,7 +1,7 @@
 package com.company.auth_service.app;
 
-import com.company.auth_service.domain.LoginService;
-import com.company.auth_service.domain.AuthService;
+import com.company.auth_service.domain.services.LoginService;
+import com.company.auth_service.domain.services.AuthService;
 import com.company.auth_service.infrastructure.web.*;
 import com.company.auth_service.infrastructure.web.mapper.UserWebMapper;
 import jakarta.validation.Valid;

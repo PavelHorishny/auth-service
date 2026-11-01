@@ -1,6 +1,7 @@
-package com.company.auth_service.domain;
+package com.company.auth_service.domain.mail_event;
 
 import java.util.Map;
+
 import lombok.Builder;
 
 @Builder

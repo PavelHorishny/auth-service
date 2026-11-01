@@ -1,7 +1,7 @@
 package com.company.auth_service.infrastructure.repository;
 
 import com.company.auth_service.TestcontainersConfiguration;
-import com.company.auth_service.domain.Roles;
+import com.company.auth_service.domain.user.Roles;
 import com.company.auth_service.infrastructure.repository.jpa.entity.UserEntity;
 import java.time.Instant;
 import java.util.List;

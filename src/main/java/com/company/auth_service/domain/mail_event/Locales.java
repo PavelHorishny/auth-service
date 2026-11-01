@@ -1,5 +1,8 @@
-package com.company.auth_service.domain;
+package com.company.auth_service.domain.mail_event;
 
+import lombok.Getter;
+
+@Getter
 public enum Locales {
     EN("en"),
     RU("ru"),
@@ -11,7 +14,4 @@ public enum Locales {
         this.code = code;
     }
 
-    public String getCode() {
-        return code;
-    }
 }

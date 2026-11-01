@@ -1,8 +1,8 @@
 package com.company.auth_service.infrastructure.repository.mock;
 
-import com.company.auth_service.domain.PasswordResetToken;
-import com.company.auth_service.domain.PasswordResetTokenRepository;
-import com.company.auth_service.domain.PendingPasswordResetNotification;
+import com.company.auth_service.domain.token.PasswordResetToken;
+import com.company.auth_service.domain.repo.PasswordResetTokenRepository;
+import com.company.auth_service.domain.token.PendingPasswordResetNotification;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Repository;
 

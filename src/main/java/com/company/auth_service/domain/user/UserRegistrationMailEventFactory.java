@@ -1,4 +1,8 @@
-package com.company.auth_service.domain;
+package com.company.auth_service.domain.user;
+
+import com.company.auth_service.domain.mail_event.Locales;
+import com.company.auth_service.domain.mail_event.MailEventMessage;
+import com.company.auth_service.domain.mail_event.TemplateKeys;
 
 import java.util.Map;
 

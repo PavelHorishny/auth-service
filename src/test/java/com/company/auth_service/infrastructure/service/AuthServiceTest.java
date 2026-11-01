@@ -1,7 +1,15 @@
 package com.company.auth_service.infrastructure.service;
 
-import com.company.auth_service.domain.*;
-
+import com.company.auth_service.domain.exceptions.EmailAlreadyRegisteredException;
+import com.company.auth_service.domain.mail_event.Locales;
+import com.company.auth_service.domain.mail_event.MailEventMessage;
+import com.company.auth_service.domain.mail_event.MailEventPublisher;
+import com.company.auth_service.domain.mail_event.TemplateKeys;
+import com.company.auth_service.domain.repo.UserRepository;
+import com.company.auth_service.domain.services.AuthService;
+import com.company.auth_service.domain.user.Roles;
+import com.company.auth_service.domain.user.User;
+import com.company.auth_service.domain.user.UserRegistrationIssuer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

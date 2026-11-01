@@ -1,7 +1,8 @@
-package com.company.auth_service.domain;
+package com.company.auth_service.domain.user;
 
 import java.time.Instant;
 import java.util.UUID;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

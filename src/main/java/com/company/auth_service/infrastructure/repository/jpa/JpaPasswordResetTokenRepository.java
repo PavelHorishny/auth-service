@@ -1,6 +1,6 @@
 package com.company.auth_service.infrastructure.repository.jpa;
 
-import com.company.auth_service.domain.PasswordResetToken;
+import com.company.auth_service.domain.token.PasswordResetToken;
 
 import java.time.Instant;
 import java.util.Collection;
@@ -8,8 +8,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import com.company.auth_service.domain.PasswordResetTokenRepository;
-import com.company.auth_service.domain.PendingPasswordResetNotification;
+import com.company.auth_service.domain.repo.PasswordResetTokenRepository;
+import com.company.auth_service.domain.token.PendingPasswordResetNotification;
 import com.company.auth_service.infrastructure.repository.TokenJpaDao;
 import com.company.auth_service.infrastructure.repository.jpa.mapper.PasswordResetTokenPersistenceMapper;
 import lombok.RequiredArgsConstructor;
@@ -58,6 +58,7 @@ public class JpaPasswordResetTokenRepository implements PasswordResetTokenReposi
     }
 
     @Override
+    @Transactional
     public boolean markUsed(UUID id) {
         return dao.markUsed(id) == 1;
     }

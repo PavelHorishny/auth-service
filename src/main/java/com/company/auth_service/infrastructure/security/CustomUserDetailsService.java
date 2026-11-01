@@ -1,7 +1,7 @@
 package com.company.auth_service.infrastructure.security;
 
-import com.company.auth_service.domain.User;
-import com.company.auth_service.domain.UserRepository;
+import com.company.auth_service.domain.user.User;
+import com.company.auth_service.domain.repo.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.NonNull;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;

@@ -1,5 +1,6 @@
-package com.company.auth_service.domain;
+package com.company.auth_service.domain.services;
 
+import com.company.auth_service.domain.token.AccessTokenGenerator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

@@ -1,7 +1,7 @@
 package com.company.auth_service.infrastructure.producer;
 
-import com.company.auth_service.domain.MailEventMessage;
-import com.company.auth_service.domain.MailEventPublisher;
+import com.company.auth_service.domain.mailevent.MailEventMessage;
+import com.company.auth_service.domain.mailevent.MailEventPublisher;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
@@ -17,7 +17,4 @@ public class LoggingMailEventPublisher implements MailEventPublisher {
                 event.eventId(), event.templateKey(), event.recipient());
     }
 
-/*
-    Implementacja publishera do celów testowych, która nie wysyła wiadomości przez Kafkę, lecz loguje, jaka wiadomość miała zostać wysłana.
-*/
 }

@@ -2,11 +2,8 @@ package com.company.auth_service.infrastructure.web;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
 public record ResetPasswordRequest(
-        @NotBlank @Email String email
+        @NotBlank @Email @Size(max = 254) String email
 ) {}
-
-/*
-Czy należy przenieść rekordy do domeny (domain), ponieważ od niczego nie zależą,
-czy zostawić w warstwie web, ponieważ są logicznie powiązane z kontrolerem?*/

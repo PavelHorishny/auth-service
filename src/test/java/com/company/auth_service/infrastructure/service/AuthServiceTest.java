@@ -1,106 +1,116 @@
 package com.company.auth_service.infrastructure.service;
 
-import com.company.auth_service.domain.EmailAlreadyRegisteredException;
-import com.company.auth_service.domain.Locales;
-import com.company.auth_service.domain.MailEventMessage;
-import com.company.auth_service.domain.MailEventPublisher;
-import com.company.auth_service.domain.Roles;
-import com.company.auth_service.domain.TemplateKeys;
-import com.company.auth_service.domain.User;
-import com.company.auth_service.infrastructure.web.RegisterRequest;
-import com.company.auth_service.infrastructure.repository.UserRepository;
-import org.junit.jupiter.api.AfterEach;
+import com.company.auth_service.domain.exceptions.EmailAlreadyRegisteredException;
+import com.company.auth_service.domain.mailevent.Locales;
+import com.company.auth_service.domain.mailevent.MailEventMessage;
+import com.company.auth_service.domain.mailevent.MailEventPublisher;
+import com.company.auth_service.domain.mailevent.TemplateKeys;
+import com.company.auth_service.domain.user.UserRepository;
+import com.company.auth_service.domain.services.AuthService;
+import com.company.auth_service.domain.user.Roles;
+import com.company.auth_service.domain.user.User;
+import com.company.auth_service.domain.user.UserRegistrationIssuer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.transaction.support.TransactionSynchronizationManager;
-import org.springframework.transaction.support.TransactionSynchronizationUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class AuthServiceTest {
 
     @Mock
-    private UserRepository userRepository;
-    @Mock
     private PasswordEncoder passwordEncoder;
     @Mock
     private MailEventPublisher mailEventPublisher;
+    @Mock
+    private UserRegistrationIssuer userRegistrationIssuer;
+    @Mock
+    private UserRepository userRepository;
 
     private AuthService authService;
 
     @BeforeEach
     void setUp() {
-        authService = new AuthService(userRepository, passwordEncoder, mailEventPublisher);
-        // register() relies on an active transaction to defer the Kafka publish; a plain
-        // unit test has no real transaction, so we simulate one manually.
-        TransactionSynchronizationManager.initSynchronization();
-    }
-
-    @AfterEach
-    void tearDown() {
-        if (TransactionSynchronizationManager.isSynchronizationActive()) {
-            TransactionSynchronizationManager.clearSynchronization();
-        }
-    }
-
-    @Test
-    void register_savesUserAndPublishesEventOnlyAfterCommit() {
-        RegisterRequest request = new RegisterRequest("new@example.com", "password123");
-        when(userRepository.existsByEmail(request.email())).thenReturn(false);
-        when(passwordEncoder.encode(request.password())).thenReturn("hashed");
-
-        User savedUser = authService.register(request);
-
-        verify(userRepository).save(savedUser);
-        verifyNoInteractions(mailEventPublisher);
-
-        TransactionSynchronizationUtils.triggerAfterCommit();
-
-        ArgumentCaptor<MailEventMessage> eventCaptor = ArgumentCaptor.forClass(MailEventMessage.class);
-        verify(mailEventPublisher).publish(eventCaptor.capture());
-        MailEventMessage event = eventCaptor.getValue();
-        assertThat(event.recipient()).isEqualTo(request.email());
-        assertThat(event.templateKey()).isEqualTo(TemplateKeys.NEW_USER);
-        assertThat(event.locale()).isEqualTo(Locales.EN);
-        assertThat(savedUser.getRole()).isEqualTo(Roles.USER);
-    }
-
-    @Test
-    void register_doesNotPublishEventWhenTransactionRollsBack() {
-        RegisterRequest request = new RegisterRequest("new@example.com", "password123");
-        when(userRepository.existsByEmail(request.email())).thenReturn(false);
-        when(passwordEncoder.encode(request.password())).thenReturn("hashed");
-
-        authService.register(request);
-
-        // simulate rollback: completion fires without a commit ever happening
-        TransactionSynchronizationUtils.triggerAfterCompletion(
-                org.springframework.transaction.support.TransactionSynchronization.STATUS_ROLLED_BACK);
-
-        verifyNoInteractions(mailEventPublisher);
+        authService = new AuthService(userRepository, passwordEncoder, mailEventPublisher, userRegistrationIssuer);
     }
 
     @Test
     void register_throwsWhenEmailAlreadyRegistered() {
-        RegisterRequest request = new RegisterRequest("taken@example.com", "password123");
-        when(userRepository.existsByEmail(request.email())).thenReturn(true);
+        User user = new User();
+        user.setEmail("dup@example.com");
+        org.mockito.Mockito.when(userRepository.existsByEmail("dup@example.com")).thenReturn(true);
 
-        assertThatThrownBy(() -> authService.register(request))
+        assertThatThrownBy(() -> authService.register(user, "pwd"))
                 .isInstanceOf(EmailAlreadyRegisteredException.class);
 
-        verify(userRepository, never()).save(any());
+        verifyNoInteractions(userRegistrationIssuer, mailEventPublisher);
+    }
+
+    @Test
+    void register_mapsUniqueIndexViolationToEmailAlreadyRegistered() {
+        User user = new User();
+        user.setEmail("race@example.com");
+        org.mockito.Mockito.when(passwordEncoder.encode("pwd")).thenReturn("hash");
+        org.mockito.Mockito.when(userRegistrationIssuer.register(user, "hash"))
+                .thenThrow(new DataIntegrityViolationException("uk_users_email"));
+
+        assertThatThrownBy(() -> authService.register(user, "pwd"))
+                .isInstanceOf(EmailAlreadyRegisteredException.class);
+
         verifyNoInteractions(mailEventPublisher);
+    }
+
+    @Test
+    void register_issuesUserPublishesEventAndMarksNotified() {
+        User mapped = new User();
+        mapped.setEmail("new@example.com");
+        org.mockito.Mockito.when(passwordEncoder.encode("password123")).thenReturn("hashed");
+
+        User issuedUser = new User();
+        issuedUser.setEmail("new@example.com");
+        issuedUser.completeRegistration("hashed", "event-123");
+        org.mockito.Mockito.when(userRegistrationIssuer.register(mapped, "hashed")).thenReturn(issuedUser);
+
+        User savedUser = authService.register(mapped, "password123");
+
+        assertThat(savedUser).isSameAs(issuedUser);
+        assertThat(savedUser.getRole()).isEqualTo(Roles.USER);
+
+        ArgumentCaptor<MailEventMessage> eventCaptor = ArgumentCaptor.forClass(MailEventMessage.class);
+        verify(mailEventPublisher).publish(eventCaptor.capture());
+        MailEventMessage event = eventCaptor.getValue();
+        assertThat(event.eventId()).isEqualTo("event-123");
+        assertThat(event.recipient()).isEqualTo("new@example.com");
+        assertThat(event.templateKey()).isEqualTo(TemplateKeys.NEW_USER);
+        assertThat(event.locale()).isEqualTo(Locales.EN);
+
+        verify(userRegistrationIssuer).markNotified(issuedUser);
+    }
+
+    @Test
+    void register_leavesUserUnnotifiedWhenPublishFails() {
+        User mapped = new User();
+        mapped.setEmail("new@example.com");
+        org.mockito.Mockito.when(passwordEncoder.encode("password123")).thenReturn("hashed");
+
+        User issuedUser = new User();
+        issuedUser.setEmail("new@example.com");
+        issuedUser.completeRegistration("hashed", "event-123");
+        org.mockito.Mockito.when(userRegistrationIssuer.register(mapped, "hashed")).thenReturn(issuedUser);
+        doThrow(new RuntimeException("kafka down")).when(mailEventPublisher).publish(any());
+
+        authService.register(mapped, "password123");
+
+        verify(userRegistrationIssuer, never()).markNotified(any());
     }
 }

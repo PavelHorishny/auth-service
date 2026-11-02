@@ -3,6 +3,8 @@ auth:
   jwt:
     secret: ${JWT_SECRET}
 
+auth.repository-mode : jpa
+
 spring:
   datasource:
     url: ${DB_URL}

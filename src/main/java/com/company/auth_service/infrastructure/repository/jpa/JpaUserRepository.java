@@ -1,0 +1,73 @@
+package com.company.auth_service.infrastructure.repository.jpa;
+
+import com.company.auth_service.domain.user.PendingUserNotification;
+import com.company.auth_service.domain.user.User;
+
+import java.time.Instant;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import com.company.auth_service.domain.user.UserRepository;
+import com.company.auth_service.infrastructure.repository.UserJpaDao;
+import com.company.auth_service.infrastructure.repository.jpa.entity.UserEntity;
+import com.company.auth_service.infrastructure.repository.jpa.mapper.UserPersistenceMapper;
+import lombok.RequiredArgsConstructor;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+
+@Repository
+@RequiredArgsConstructor
+@ConditionalOnProperty(prefix = "auth", name = "repository-mode", havingValue = "jpa")
+public class JpaUserRepository implements UserRepository{
+
+    private final UserJpaDao dao;
+    private final UserPersistenceMapper mapper;
+
+    @Override
+    public Optional<User> findByEmail(String email) {
+        return dao.findByEmail(email).map(mapper::toDomain);
+    }
+
+    @Override
+    public boolean existsByEmail(String email) {
+        return dao.existsByEmail(email);
+    }
+
+    @Override
+    public Map<UUID, String> findEmailsByIds(Collection<UUID> ids) {
+        if (ids.isEmpty()) return Map.of();
+        return dao.findEmailsByIds(ids).stream()
+                .collect(Collectors.toMap(UserJpaDao.EmailRow::getId,UserJpaDao.EmailRow::getEmail));
+    }
+
+    @Override
+    @Transactional(propagation = Propagation.MANDATORY)
+    public List<PendingUserNotification> lockPendingNotifications(int limit) {
+        return dao.lockPendingNotifications(limit).stream()
+                .map(r -> new PendingUserNotification(r.getId(), r.getEventId(), r.getEmail()))
+                .toList();
+    }
+
+    @Override @Transactional
+    public int markNotified(Collection<UUID> ids) {
+        if (ids.isEmpty()) return 0;
+        return dao.markNotified(ids, Instant.now());
+    }
+
+
+    @Override
+    public User save(User user) {
+        UserEntity entity = mapper.toEntity(user);
+        return mapper.toDomain(dao.save(entity));
+    }
+
+    @Override
+    @Transactional
+    public void updatePasswordHash(UUID userId, String passwordHash) {
+        if (dao.updatePasswordHash(userId, passwordHash, Instant.now()) != 1) {
+            throw new IllegalStateException("User not found for password reset: " + userId);
+        }
+    }
+}

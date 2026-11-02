@@ -14,5 +14,4 @@ public class PasswordEncoderConfig {
     }
 }
 
-/*
-Klasa hashingująca hasło użytkownika*/
+

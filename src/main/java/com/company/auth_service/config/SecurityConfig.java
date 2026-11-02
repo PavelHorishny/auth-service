@@ -28,7 +28,7 @@ public class SecurityConfig {
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/register", "/login", "/reset-password", "/reset-password/confirm",
-                                "/swagger-ui/**", "/v3/api-docs/**", "/actuator/health").permitAll() //check allowance necessity
+                                "/swagger-ui/**", "/v3/api-docs/**", "/actuator/health").permitAll()
                         .anyRequest().authenticated())
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
@@ -47,7 +47,4 @@ public class SecurityConfig {
         return provider;
     }
 
-/*
-    Klasa konfiguracyjna bezpieczeństwa. Reguluje zachowanie aplikacji podczas odpytywania kontrolera
-*/
 }

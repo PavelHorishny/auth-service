@@ -17,14 +17,25 @@ spring:
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      acks: all
+      enable.idempotence: true
+      max.block.ms: 3000
+      request.timeout.ms: 3000
+      delivery.timeout.ms: 5000
       properties:
         spring.json.add.type.headers: false
 
 auth:
   mailing-topic: mailing-events
   mailing-producer-mode: mock
+  mailing-send-timeout-ms: 7000
   password-reset:
     token-ttl-minutes: 30
+    retry-interval-ms: 60000
+    retry-batch-size: 100
+  registration:
+    retry-interval-ms: 60000
+    retry-batch-size: 100
   jwt:
     secret: ${JWT_SECRET:dev-only-secret-change-me-32-bytes-min}
     expiration-minutes: 60

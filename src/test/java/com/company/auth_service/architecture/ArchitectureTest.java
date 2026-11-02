@@ -7,6 +7,7 @@ import com.tngtech.archunit.junit.ArchTest;
 import com.tngtech.archunit.lang.ArchRule;
 
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses;
+import static com.tngtech.archunit.library.dependencies.SlicesRuleDefinition.slices;
 
 @AnalyzeClasses(packages = "com.company.auth_service", importOptions = ImportOption.DoNotIncludeTests.class)
 public class ArchitectureTest {
@@ -19,4 +20,9 @@ public class ArchitectureTest {
     static final ArchRule domainShouldNotDependOnApp = noClasses()
             .that().resideInAPackage("..domain..")
             .should().dependOnClassesThat().resideInAPackage("..app..");
+
+    @ArchTest
+    static final ArchRule domainPackagesShouldBeFreeOfCycles = slices()
+            .matching("com.company.auth_service.domain.(*)..")
+            .should().beFreeOfCycles();
 }

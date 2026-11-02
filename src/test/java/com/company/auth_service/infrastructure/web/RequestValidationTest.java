@@ -32,7 +32,6 @@ class RequestValidationTest {
         factory.close();
     }
 
-    // ---------- пароль: RegisterRequest ----------
 
     @Test
     void register_acceptsValidInput() {
@@ -92,7 +91,6 @@ class RequestValidationTest {
                 .isNotEmpty();
     }
 
-    // ---------- email ----------
 
     @Test
     void register_rejectsBlankEmail() {
@@ -126,7 +124,6 @@ class RequestValidationTest {
         assertThat(validator.validate(new ResetPasswordRequest("user@example.com"))).isEmpty();
     }
 
-    // ---------- ConfirmResetPasswordRequest ----------
 
     @Test
     void confirmReset_acceptsValidInput() {
@@ -154,7 +151,6 @@ class RequestValidationTest {
                 .isNotEmpty();
     }
 
-    // ---------- LoginRequest: правила сложности не проверяются, только размер ----------
 
     @Test
     void login_doesNotEnforcePasswordComplexity() {
@@ -172,9 +168,7 @@ class RequestValidationTest {
         assertThat(violations(new LoginRequest("a".repeat(255), "password1"), "email", Size.class)).isNotEmpty();
     }
 
-    // ---------- helper ----------
 
-    /** Нарушения одного свойства, вызванные именно этой аннотацией: тест падает по правильной причине. */
     private static <T> Set<ConstraintViolation<T>> violations(
             T request, String property, Class<? extends Annotation> constraint) {
         Set<ConstraintViolation<T>> all = validator.validateProperty(request, property);

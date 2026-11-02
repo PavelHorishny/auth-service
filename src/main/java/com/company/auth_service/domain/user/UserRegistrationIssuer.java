@@ -21,7 +21,7 @@ public class UserRegistrationIssuer {
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void markNotified(User user) {//is it suitable for issue of using only one field or must i made to get certain field as an argument
+    public void markNotified(User user) {
         user.markNotified();
         userRepository.markNotified(List.of(user.getId()));
     }

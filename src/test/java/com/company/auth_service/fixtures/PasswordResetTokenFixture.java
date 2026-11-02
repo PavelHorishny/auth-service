@@ -17,7 +17,7 @@ import lombok.With;
 public class PasswordResetTokenFixture {
 
     private UUID id = null;
-    private UUID userId = UUID.randomUUID();     // в IT подставь id реального пользователя (FK)
+    private UUID userId = UUID.randomUUID();
     private String token = UUID.randomUUID().toString();
     private Instant expiresAt = Instant.now().plus(30, ChronoUnit.MINUTES);
     private boolean used = false;

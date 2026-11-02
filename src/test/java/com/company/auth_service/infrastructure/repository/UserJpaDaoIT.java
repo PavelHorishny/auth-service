@@ -87,7 +87,6 @@ class UserJpaDaoIT {
         assertThat(userDao.updatePasswordHash(UUID.randomUUID(), "x", Instant.now())).isEqualTo(0);
     }
 
-    // ---------- ограничения схемы (миграции 001 и 006) ----------
 
     @Test
     void duplicateEmail_isRejectedByUniqueConstraint() {

@@ -33,7 +33,6 @@ class PasswordResetTokenRepositoryIT {
     @Autowired
     private UserJpaDao userRepository;
 
-    // ---------- поиск валидного токена: derived-метод и @Query должны совпадать ----------
 
     @Test
     void agreeOnValidToken() {
@@ -64,7 +63,7 @@ class PasswordResetTokenRepositoryIT {
         assertBothMethodsReturn("no-such-token", null);
     }
 
-    // ---------- шедулер: claim и bulk update ----------
+
 
     @Test
     void lockPendingNotifications_returnsOnlyUnnotifiedTokensAsProjection() {
@@ -116,7 +115,7 @@ class PasswordResetTokenRepositoryIT {
         assertThat(tokenRepository.findById(valid.getId()).orElseThrow().isNotified()).isFalse();
     }
 
-    // ---------- погашение токена ----------
+
 
     @Test
     void markUsed_succeedsOnceThenReportsZeroRows() {
@@ -127,12 +126,12 @@ class PasswordResetTokenRepositoryIT {
         assertThat(tokenRepository.findById(token.getId()).orElseThrow().isUsed()).isTrue();
     }
 
-    // ---------- ограничения схемы (миграции 002 и 006) ----------
+
 
     @Test
     void tokenOfUnknownUser_isRejectedByForeignKey() {
         PasswordResetTokenEntity orphan = PasswordResetTokenFixture.getInstance()
-                .withUserId(UUID.randomUUID())          // такого пользователя нет
+                .withUserId(UUID.randomUUID())
                 .toEntity();
 
         assertThatThrownBy(() -> tokenRepository.saveAndFlush(orphan))
@@ -147,13 +146,13 @@ class PasswordResetTokenRepositoryIT {
                 .isInstanceOf(DataIntegrityViolationException.class);
     }
 
-    // ---------- helpers ----------
+
 
     private UserEntity saveUser() {
         return userRepository.save(UserFixture.getInstance().toEntity());
     }
 
-    /** Сохраняет токен для нового пользователя (FK требует существующего user_id). */
+
     private PasswordResetTokenEntity saveToken(PasswordResetTokenFixture fixture) {
         UserEntity user = saveUser();
         return tokenRepository.saveAndFlush(fixture.withUserId(user.getId()).toEntity());
